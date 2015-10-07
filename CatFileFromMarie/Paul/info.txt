@@ -1,0 +1,6 @@
+c200000.cat C(12) S(32)
+c3s_c13-1.cat C(12) C(13) S(32)
+ch3sno.anti_cat C(12) H(1) S(32) N(14) O(16)
+hc3n_1nu3.cat H(1) C(12) N(14)
+hc3s.cat H(1) C(12) S(32)
+si2c.cat Si(28) C(12)
