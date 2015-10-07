@@ -1,0 +1,245 @@
+alpha tests                                             Tue Oct  6 15:39:52 2015
+LINES REQUESTED=    4 NUMBER OF PARAMETERS=  3 NUMBER OF ITERATIONS= 15
+  MARQUARDT PARAMETER = 0.0000E+00 max (OBS-CALC)/ERROR =1.0000E+06
+                              PARAMETERS - A.PRIORI ERROR 
+     1      1         10000   5.0420521528049E+03    1.241898E+10 
+     2      2         20000   8.0807210846684E+02    1.159038E+10 
+     3      3         30000   3.0364539915430E+02    1.000000E+10 
+3 parameters read, 3 independent parameters
+NUMBER OF PARAMETERS EXCLUDED IF INDEX < 0 =    1
+EIGENVECTOR SORT OF STATES
+PROLATE ROTOR
+    V KMIN KMAX WTPL WTMN ESYMWT NSYM SPINS
+    0    0   16    1    1     99    2
+BLOCK - WT - SYM - V - TSP - N  -  other quanta  (rel. to F=0 )
+    1    1    x    0    0
+    2    1    c    0    0
+    3    1    b    0    0
+    4    1    a    0    0
+Maximum Dimension for Hamiltonian = 9
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000   17468.51019 -999.99999    0.10000   0.00000
+    2:  16  6 11 15  6 10                      7822.12600   18730.71935 -999.99999    0.10000   0.00000
+    3:  15  7  9 14  7  8                      7105.53200   17284.74615 -999.99999    0.10000   0.00000
+    4:  16  7 10 15  7  9                      7908.58000   18512.24830 -999.99999    0.10000   0.00000
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   1.32701E-03    3   1.50717E-01
+MARQUARDT PARAMETER = 0, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                      -99565( 77)          -104607    
+   2         20000                    -2338.79(202)         -3146.86    
+   3         30000                     2719.48(195)          2415.83    
+ MICROWAVE AVG =   -10524.001499 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =    10527.414683 MHz, IR RMS =        0.00000
+ END OF ITERATION  1 OLD, NEW RMS ERROR=   105274.14526      1356.77403
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    2128.04937  999.99999    0.10000   3.88191
+    2:  16  6 11 15  6 10                      7822.12600    1811.22755  999.99999    0.10000   4.50484
+    3:  15  7  9 14  7  8                      7105.53200    2971.06848  999.99999    0.10000   3.21389
+    4:  16  7 10 15  7  9                      7908.58000    2835.62658  999.99999    0.10000   3.69220
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   1.25702E-05    3   1.58909E-01
+MARQUARDT PARAMETER = 2.00249e-08, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                     -444289(1246)          -344724    
+   2         20000                     -5358.4(159)          -3019.6    
+   3         30000                      5831.8(159)           3112.3    
+ MICROWAVE AVG =     5038.561504 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =     5082.395014 MHz, IR RMS =        0.00000
+ END OF ITERATION  2 OLD, NEW RMS ERROR=    50823.94938       428.46970
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    3173.94252  999.99999    0.10000  11.17011
+    2:  16  6 11 15  6 10                      7822.12600    2884.94074  999.99999    0.10000  13.35024
+    3:  15  7  9 14  7  8                      7105.53200    4095.48665  999.99999    0.10000   8.52815
+    4:  16  7 10 15  7  9                      7908.58000    4004.05898  999.99999    0.10000  10.14145
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   2.90800E-06    3   1.50948E-01
+MARQUARDT PARAMETER = 4.39516e-10, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                    -1398477(17096)          -954187    
+   2         20000                       -8456(108)            -3098    
+   3         30000                        8929(108)             3097    
+ MICROWAVE AVG =     3935.447277 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =     3994.178492 MHz, IR RMS =        0.00000
+ END OF ITERATION  3 OLD, NEW RMS ERROR=    39941.78432      1500.02708
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    4075.29102  999.99999    0.10000  37.67009
+    2:  16  6 11 15  6 10                      7822.12600    3963.88983  999.99999    0.10000  45.00411
+    3:  15  7  9 14  7  8                      7105.53200    4781.06703  999.99999    0.10000  28.78529
+    4:  16  7 10 15  7  9                      7908.58000    4820.58970  999.99999    0.10000  34.21922
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   4.67913E-07    3   1.47039E-01
+MARQUARDT PARAMETER = 1.60345e-11, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                    -1876875(182319)          -478399    
+   2         20000                       -5336(567)             3120    
+   3         30000                        5807(567)            -3121    
+ MICROWAVE AVG =     3064.845105 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =     3112.758811 MHz, IR RMS =        0.00000
+ END OF ITERATION  4 OLD, NEW RMS ERROR=    31127.58764      1506.65061
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    6146.88019  917.09981    0.10000  97.83473
+    2:  16  6 11 15  6 10                      7822.12600    6439.46746  999.99999    0.10000 116.82302
+    3:  15  7  9 14  7  8                      7105.53200    6362.85855  742.67345    0.10000  74.86332
+    4:  16  7 10 15  7  9                      7908.58000    6701.59593  999.99999    0.10000  88.94295
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   5.47542E-08    3   1.45216E-01
+MARQUARDT PARAMETER = 3.77367e-12, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                    -2026058(790353)          -149183    
+   2         20000                       -2217(1173)             3119    
+   3         30000                        2688(1173)            -3119    
+ MICROWAVE AVG =     1062.353967 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =     1091.007687 MHz, IR RMS =        0.00000
+ END OF ITERATION  5 OLD, NEW RMS ERROR=    10910.07671      1505.54577
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    6901.13964  162.84036    0.10000  93.67509
+    2:  16  6 11 15  6 10                      7822.12600    7340.17856  481.94744    0.10000 111.83894
+    3:  15  7  9 14  7  8                      7105.53200    6939.90772  165.62428    0.10000  71.71060
+    4:  16  7 10 15  7  9                      7908.58000    7387.22897  521.35103    0.10000  85.18191
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   3.81775E-09    3   1.44287E-01
+MARQUARDT PARAMETER = 2.94752e-13, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                    -1148385(6937897)           877674    
+   2         20000                         902(4199)             3119    
+   3         30000                        -431(4199)            -3119    
+ MICROWAVE AVG =      332.940776 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =      373.506563 MHz, IR RMS =        0.00000
+ END OF ITERATION  6 OLD, NEW RMS ERROR=     3735.06557      1505.15386
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    7044.89510   19.08490    0.10000 401.32086
+    2:  16  6 11 15  6 10                      7822.12600    7511.81791  310.30809    0.10000 479.11478
+    3:  15  7  9 14  7  8                      7105.53200    7049.93878   55.59322    0.10000 307.26294
+    4:  16  7 10 15  7  9                      7908.58000    7517.93907  390.64093    0.10000 364.96287
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   1.43964E-01    3   9.89898E-10
+MARQUARDT PARAMETER = 2.96651e-14, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                    -1340847(45650968)          -192462    
+   2         20000                       -2217(13236)            -3119    
+   3         30000                        2688(13236)             3119    
+ MICROWAVE AVG =      193.906787 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =      251.170406 MHz, IR RMS =        0.00000
+ END OF ITERATION  7 OLD, NEW RMS ERROR=     2511.70402      1506.71232
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    6816.48294  247.49706    0.10000 11205.39617
+    2:  16  6 11 15  6 10                      7822.12600    7239.12800  582.99800    0.10000 13377.74034
+    3:  15  7  9 14  7  8                      7105.53200    6875.06093  230.47107    0.10000 8578.90894
+    4:  16  7 10 15  7  9                      7908.58000    7310.22110  598.35890    0.10000 10190.02054
+Fit Diverging: restore parameters
+MARQUARDT PARAMETER = 2.96651e-14, TRUST EXPANSION = 0.38
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                    -1176470(45650968)           -28085    
+   2         20000                         447(13236)             -455    
+   3         30000                          25(13236)              455    
+ MICROWAVE AVG =      414.831257 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =      450.636147 MHz, IR RMS =        0.00000
+ END OF ITERATION  8 OLD, NEW RMS ERROR=     4506.36140      1506.71232
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    7064.30640   -0.32640    0.10000 182.67355
+    2:  16  6 11 15  6 10                      7822.12600    7534.99215  287.13385    0.10000 218.08449
+    3:  15  7  9 14  7  8                      7105.53200    7064.80031   40.73169    0.10000 139.85878
+    4:  16  7 10 15  7  9                      7908.58000    7535.59157  372.98843    0.10000 166.12319
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   1.43761E-01    3   2.89437E-09
+MARQUARDT PARAMETER = 5.16621e-14, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                   -91589480(111885726)        -90413010    
+   2         20000                        -745(10030)            -1191    
+   3         30000                        1216(10030)             1191    
+ MICROWAVE AVG =      175.131894 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =      236.233674 MHz, IR RMS =        0.00000
+ END OF ITERATION  9 OLD, NEW RMS ERROR=     2362.33670      1506.97562
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    7065.82194   -1.84194    0.10000  12.68210
+    2:  16  6 11 15  6 10                      7822.12600    7536.80237  285.32363    0.10000  15.13939
+    3:  15  7  9 14  7  8                      7105.53200    7065.95897   39.57303    0.10000   9.71216
+    4:  16  7 10 15  7  9                      7908.58000    7536.96869  371.61131    0.10000  11.53465
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   4.85044E-08    3   1.43678E-01
+MARQUARDT PARAMETER = 5.88225e-13, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                -0.028720031(557605)E+12 -0.028628442E+12
+   2         20000                         447(2970)             1191    
+   3         30000                          25(2970)            -1191    
+ MICROWAVE AVG =      173.666508 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =      235.092513 MHz, IR RMS =        0.00000
+ END OF ITERATION 10 OLD, NEW RMS ERROR=     2350.92510      1506.98634
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    7066.41992   -2.43992    0.10000   0.33662
+    2:  16  6 11 15  6 10                      7822.12600    7537.51294  284.61306    0.10000   0.35907
+    3:  15  7  9 14  7  8                      7105.53200    7066.41992   39.11208    0.10000   0.33662
+    4:  16  7 10 15  7  9                      7908.58000    7537.51245  371.06755    0.10000   0.35906
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   1.00000E+00    3   7.42809E-09
+MARQUARDT PARAMETER = 5.19474e-12, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                 0.030199839(12418971)E+12  0.058919870E+12
+   2         20000                        -739(1000)            -1186    
+   3         30000                        1222(1000)             1197    
+ MICROWAVE AVG =      173.088191 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =      234.644107 MHz, IR RMS =        0.00000
+ END OF ITERATION 11 OLD, NEW RMS ERROR=     2346.44132      1506.99776
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    7238.57654 -174.59654    0.10000   0.04845
+    2:  16  6 11 15  6 10                      7822.12600    7721.14856  100.97744    0.10000   0.05172
+    3:  15  7  9 14  7  8                      7105.53200    7238.57690 -133.04490    0.10000   0.04841
+    4:  16  7 10 15  7  9                      7908.58000    7721.14917  187.43083    0.10000   0.05165
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   9.99916E-01    3   3.28285E-08
+MARQUARDT PARAMETER = 5.19474e-12, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                -0.109769077(12418508)E+12 -0.139968916E+12
+   2         20000                       -6003(1000)            -5264    
+   3         30000                        6486(1000)             5264    
+ MICROWAVE AVG =       -4.808293 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =      152.898379 MHz, IR RMS =        0.00000
+ END OF ITERATION 12 OLD, NEW RMS ERROR=     1528.98425      1506.98285
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    7238.52832 -174.54832    0.10000   0.04936
+    2:  16  6 11 15  6 10                      7822.12600    7721.09717  101.02883    0.10000   0.05282
+    3:  15  7  9 14  7  8                      7105.53200    7238.53613 -133.00413    0.10000   0.04906
+    4:  16  7 10 15  7  9                      7908.58000    7721.09473  187.48527    0.10000   0.05245
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   5.75258E-08    3   9.99242E-01
+MARQUARDT PARAMETER = 8.99991e-12, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                -0.058738344(12418508)E+12  0.051030732E+12
+   2         20000                        -678(760)             5325    
+   3         30000                        1160(760)            -5325    
+ MICROWAVE AVG =       -4.759587 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =      152.900922 MHz, IR RMS =        0.00000
+ END OF ITERATION 13 OLD, NEW RMS ERROR=     1529.01559      1507.01071
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    7238.57300 -174.59300    0.10000   0.04850
+    2:  16  6 11 15  6 10                      7822.12600    7721.14160  100.98440    0.10000   0.05170
+    3:  15  7  9 14  7  8                      7105.53200    7238.57031 -133.03831    0.10000   0.04853
+    4:  16  7 10 15  7  9                      7908.58000    7721.14746  187.43254    0.10000   0.05174
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   1.58232E-08    3   9.99987E-01
+MARQUARDT PARAMETER = 2.47531e-12, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                -0.185263463(12418747)E+12 -0.126525118E+12
+   2         20000                        4648(1449)             5325    
+   3         30000                       -4165(1449)            -5325    
+ MICROWAVE AVG =       -4.803593 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =      152.897607 MHz, IR RMS =        0.00000
+ END OF ITERATION 14 OLD, NEW RMS ERROR=     1528.97788      1506.97532
+                                        EXP.FREQ.  -  CALC.FREQ. -   DIFF.  - EXP.ERR.- EST.ERR.-AVG. CALC.FREQ. -  DIFF. - WT.
+    1:  15  6 10 14  6  9                      7063.98000    7238.54980 -174.56980    0.10000   0.04876
+    2:  16  6 11 15  6 10                      7822.12600    7721.13281  100.99319    0.10000   0.05208
+    3:  15  7  9 14  7  8                      7105.53200    7238.55664 -133.02464    0.10000   0.04865
+    4:  16  7 10 15  7  9                      7908.58000    7721.13867  187.44133    0.10000   0.05194
+NORMALIZED DIAGONAL:
+    1   1.00000E+00    2   9.99943E-01    3   2.40517E-08
+MARQUARDT PARAMETER = 3.76276e-12, TRUST EXPANSION = 1.00
+                                NEW PARAMETER (EST. ERROR) -- CHANGE THIS ITERATION
+   1         10000                -0.052675008(12418968)E+12  0.132588455E+12
+   2         20000                        -678(1175)            -5325    
+   3         30000                        1160(1175)             5325    
+ MICROWAVE AVG =       -4.789982 MHz, IR AVG =        0.00000
+ MICROWAVE RMS =      152.892157 MHz, IR RMS =        0.00000
+ END OF ITERATION 15 OLD, NEW RMS ERROR=     1528.93974      1506.93198
+  1  2 -0.000005  1  3  0.000005  2  1 -0.000005  2  3 -1.000000  3  1  0.000005  3  2 -1.000000
+alpha tests                                             Tue Oct  6 15:39:52 2015

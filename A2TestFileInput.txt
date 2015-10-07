@@ -1,0 +1,19 @@
+# comment line
+// comment line
+
+number of frequencies = 4
+7063.9800   0 0
+7822.1260   1 0
+7105.532   0 1
+7908.580   1 1
+
+
+
+
+uncertainty = .1
+
+j_low  5
+j_high  15
+k_low  0
+k_high  7
+

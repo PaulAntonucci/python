@@ -1,0 +1,20 @@
+# comment line
+// comment line
+
+number of frequencies = 6
+1234.1234   0 0
+2435.2345   0 1
+3456.3456   1 0
+4567.4567   1 1
+5678.5678   2 0
+6789.7654   2 1
+
+
+
+uncertainty = .1234
+
+j_low  9
+j_high  11
+k_low  0
+k_high  3
+
