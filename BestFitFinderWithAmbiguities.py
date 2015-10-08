@@ -127,17 +127,17 @@ def openFitFile(fileIndex):
          rmsValuesArray[fileIndex] = float(placesToSearch[endOfPlacesToSearch - 1])
          rms2Array[fileIndex] = float(placesToSearch[endOfPlacesToSearch - 2])
          iterationNumberArray[fileIndex] = int(placesToSearch[endOfPlacesToSearch - 7])
-         #print(str(rmsValuesArray[fileIndex]))
-         #print(str(rms2Array[fileIndex]))
-         #print(str(iterationNumberArray[fileIndex]))
+         print(str(rmsValuesArray[fileIndex]))
+         print(str(rms2Array[fileIndex]))
+         print(str(iterationNumberArray[fileIndex]))
                
    f1.close()
 
 
    
 def writeLinFile():
-   #filename = 'test' + str(j)+'_'+str(k) + '_' +str(kcpatch)+ '.lin'
-   filename = 'test.lin'
+   filename = 'test' + str(j)+'_'+str(k) + '_' +str(kcpatch)+ '.lin'
+   #filename = 'test.lin'
 
    outf = open(filename, 'w')
    for index in range (0,numberOfLines):
