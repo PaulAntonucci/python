@@ -141,6 +141,7 @@ def writeLinFile():
 
    outf = open(filename, 'w')
    for index in range (0,numberOfLines):
+       
          lineToWrite = repr(j+1 + jQuantumIncrements[index]).rjust(3)+ str(k + kQuantumIncrements[index]).rjust(3)+ \
          str(kcpatch + j+1 + jQuantumIncrements[index] - (k + kQuantumIncrements[index]) ).rjust(3)+ \
          str(j + jQuantumIncrements[index]).rjust(3) +str(k + kQuantumIncrements[index]).rjust(3) +\
@@ -148,7 +149,12 @@ def writeLinFile():
          repr(frequencies[index]).rjust(33) +  repr(uncertainties[index]).rjust(11) + '\n'
          # can also use spaces and literals, e.g.  '  '+ str(kcpatch + j+1 + jQuantumIncrements[index] - (k + kQuantumIncrements[index]) ).rjust(3)+ '  '+ \
          outf.write(lineToWrite)
-      
+   #for index  in range (0, numberOfCrossLines)
+         #jLocalHigh = j + jCrossQuantumIncrementsHigh[index]
+         #jLocalLow  = j + jCrossQuantumIncrementsLow[index]
+         #kLocal = k + kCrossQuantumIncrements[index]
+         #lineToWrite = repr(jLocal).rjust(3) + str(k + kCrossQuantumIncrements[index]).rjust(3) + \
+         #str(kcpatch +         
    outf.close()            
 
 
@@ -236,6 +242,7 @@ def processFile():
     global kcPatchArray
     global kcpatch
     files_written = 0
+    
     for j in range (j_low, j_high):
        for k in range (k_low, k_high):
           if(k !=0):
@@ -260,6 +267,30 @@ def processFile():
     print (str(files_written) + ' Files Written')   
     sort()
 
+def filterSelection(j,k,kc,jb,kb,kbc):
+
+    # Odd and even selection rules.
+    kcOdd = kc&1 # logical and
+    kOdd  = k&1
+    kbOdd = kb&1
+    kbcOdd = kbc&1
+
+    returnValue = 1
+    if ((not kOdd) and (not kcOdd)):
+        if (((not (kbOdd)) and kbcOdd)):
+            returnValue = 0
+    elif (kOdd and (not kcOdd)):
+           returnValue = 0
+
+        
+    
+    if not(((kc-kbc)==1) or ((kbc - kc)==1) or  (kc == kbc)):
+        returnValue = 0
+
+
+
+    return (returnValue)
+        
 
 root = Tk()
 menubar = Menu(root)
@@ -271,6 +302,101 @@ menubar.add_cascade(label="File", menu=filemenu)
 root.config(menu=menubar)
 
 # processFile()
+
+jaOffset = 1
+jbOffset = 2
+
+for j in range (5,8):
+    for k in range (1,3):
+        for kc in [j-k,j-k+1]:
+            # first do A type transitions - delta Kb = 0 for all A type
+            jb = j+1
+            kb = k
+            kbc = kc +1
+            print ("A type transition - new j,k,kc - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j),str(k),str(kc),str(jb),str(kb),str(kbc))
+
+            # next B-type
+            if (kc == j-k):
+                jb  = j + 1
+                kb = k + 1
+                kbc = kc + 1
+
+                print ("B type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j),str(k),str(kc),str(jb),str(kb),str(kbc))
+            else:
+                jb  = j + 1
+                kb = k  -1
+                kbc = kc + 1
+                print ("B type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j),str(k),str(kc),str(jb),str(kb),str(kbc))
+           
+                jb  = j +1
+                kb = k +1
+                kbc = kc - 1
+                print ("B type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j),str(k),str(kc),str(jb),str(kb),str(kbc))
+
+
+
+            if (kc != j-k):
+                jb  = j - 1
+                kb = k - 1
+                kbc = kc - 1
+
+                print ("B type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j),str(k),str(kc),str(jb),str(kb),str(kbc))
+            else:
+                jb  = j - 1
+                kb = k  -1
+                kbc = kc + 1
+                print ("B type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j),str(k),str(kc),str(jb),str(kb),str(kbc))
+           
+                jb  = j - 1
+                kb = k +1
+                kbc = kc - 1
+                print ("B type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j),str(k),str(kc),str(jb),str(kb),str(kbc))
+
+
+            # delta j = 0 transitions
+            jb = j
+            kb = k - 1
+            kbc = kc + 1
+            print ("B type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j),str(k),str(kc),str(jb),str(kb),str(kbc))
+            kb = k+1
+            kbc = kc -1
+            print ("B type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j),str(k),str(kc),str(jb),str(kb),str(kbc))
+            
+
+
+
+            # C type transition   - delta Kc = 0 for all C type
+            kbc = kc    
+            jb = j+1
+            kb = k +1
+            print ("C type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j),str(k),str(kc),str(jb),str(kb),str(kbc))
+            jb = j-1
+            kb = k-1
+            print ("C type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j),str(k),str(kc),str(jb),str(kb),str(kbc))
+            if(kc == j-k):
+                jb = j
+                kb = k + 1
+            else:
+                jb = j
+                kb = k - 1
+            print ("C type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j),str(k),str(kc),str(jb),str(kb),str(kbc))
+
+            
+
+
+
+
+
+
+
+
+
+            
+            
+            
+
+ 
+
 
 
 root.mainloop()
