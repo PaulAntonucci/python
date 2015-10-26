@@ -17,11 +17,22 @@ kcpatch = 0
 frequencies =[7063.9800, 7822.1260, 7105.532, 7908.580, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, \
               0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 numberOfALadderLines = 4 #Could be len(frequencies) if array were populated
+jQuantumIncrements=  [0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0]
+kQuantumIncrements = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0]
+
+Bfrequencies =[7063.9800, 7822.1260, 7105.532, 7908.580, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, \
+              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+numberOfBLadderLines = 4
+jBQuantumIncrements=  [0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0]
+kBQuantumIncrements = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0]
+
+
 uncertainty = 00.1
 
 numberOfCrossLadderLines = 0
 crossLadderFrequencies = [1.1, 2.2, 3.3, 4.4, 5.5, 6.6, 7.7, 8.8, 9.9]
 jCrossLadderQuantumIncrements=  [0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0]
+jBCrossLadderQuantumIncrements=  [0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0]
 
 j_low =  5
 j_high = 15
@@ -33,8 +44,6 @@ k_high = 7
 numberOfFiles = (j_high - j_low) * (k_high - k_low) * 2 - (j_high - j_low)
 maximumNumberOfFiles = 1000 # * numberOfFiles
 
-jQuantumIncrements=  [0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0]
-kQuantumIncrements = [0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0]
 
 jArray=[0 for i in range(maximumNumberOfFiles)]
 kArray=[0 for i in range(maximumNumberOfFiles)]
@@ -59,17 +68,22 @@ CrossLadderKc=[0 for i in range(0,10)]
 
 def openfile():
    global frequencies
+   global Bfrequencies
    global j_low
    global j_high
    global k_low
    global k_high
    global jQuantumIncrements
    global kQuantumIncrements
+   global jBQuantumIncrements
+   global kBQuantumIncrements
    global uncertainty
    global numberOfALadderLines
+   global numberofBLadderLines
    global numberOfFiles
    global crossLadderFrequencies
    global jCrossLadderQuantumIncrements
+   global jBCrossLadderQuantumIncrements
    global numberOfCrossLadderLines
 
    filename = askopenfilename(parent=root)
@@ -78,7 +92,7 @@ def openfile():
    endIsAt = len(lines)
    gotJA = 0;gotCross=0;gotUncertainty=0;gotj_low=0;gotj_high=0;gotk_low=0;gotk_high=0;
    for index in range (0,endIsAt):
-      if('number of frequencies') in lines[index]:
+      if('ja ladder number of frequencies') in lines[index]:
          placesToSearch = lines[index].split()
          endOfPlacesToSearch = len(placesToSearch)
          numberOfALadderLines = int(placesToSearch[endOfPlacesToSearch - 1])
@@ -90,7 +104,21 @@ def openfile():
             
          index+= 1+secondIndex
 
-      if('cross ladder frequencies') in lines[index]:
+      if('jb ladder number of frequencies') in lines[index]:
+         placesToSearch = lines[index].split()
+         endOfPlacesToSearch = len(placesToSearch)
+         numberOfBLadderLines = int(placesToSearch[endOfPlacesToSearch - 1])
+         for secondIndex in range (0, numberOfALadderLines):
+            inputData = lines[index+1+secondIndex].split()
+            Bfrequencies[secondIndex] = float(inputData[0])
+            jBQuantumIncrements[secondIndex] = int(inputData[1])
+            kBQuantumIncrements[secondIndex] = int(inputData[2])
+            print('B freq:'+ str(Bfrequencies[secondIndex]))
+            
+         index+= 1+secondIndex
+
+
+      if('cross ladder frequencies and Ja') in lines[index]:
          placesToSearch = lines[index].split()
          endOfPlacesToSearch = len(placesToSearch)
          numberOfCrossLadderLines = int(placesToSearch[endOfPlacesToSearch - 1])
@@ -101,6 +129,14 @@ def openfile():
             # kQuantumIncrements[secondIndex] = int(inputData[2])
             print("cross ladder" + str(crossLadderFrequencies[secondIndex]))
             
+         index+= 1+secondIndex
+
+      if('cross ladder Jb displacements') in lines[index]:
+         endOfPlacesToSearch = len(placesToSearch)
+         for secondIndex in range (0, numberOfCrossLadderLines):
+            inputData = lines[index+1+secondIndex].split()
+            jBCrossLadderQuantumIncrements[secondIndex] = int(inputData[1])
+            print("cross ladder Jb displacement" + str(jBCrossLadderQuantumIncrements[secondIndex]))   
          index+= 1+secondIndex
 
     
@@ -179,7 +215,7 @@ def processFitFile(fileIndex):
          #print(str(iterationNumberArray[fileIndex]))
 
 
-   if((fileIndex == 113) or (fileIndex == 117) or (fileIndex == 118)):
+   if((fileIndex == 117) or (fileIndex == 111) or (fileIndex == 64)):
    #    test.fit
       filename = 'test' + str(fileIndex)
       outf = open(filename, 'w')  
@@ -198,7 +234,7 @@ def writeLinFile():
 
    outf = open(filename, 'w')
    
-   for index in range (0,numberOfALadderLines + numberOfCrossLadderLines):
+   for index in range (0,numberOfALadderLines + numberOfCrossLadderLines + numberOfBLadderLines ):
       lineToWrite = LinesToWriteToFile[index]
       outf.write(lineToWrite)
         
@@ -221,6 +257,27 @@ def writeALadderLines():
          repr(frequencies[index]).rjust(33) +  repr(uncertainty).rjust(11) + '\n'
          # can also use spaces and literals, e.g.  '  '+ str(kcpatch + j+1 + jQuantumIncrements[index] - (k + kQuantumIncrements[index]) ).rjust(3)+ '  '+ \
          LinesToWriteToFile[index] = lineToWrite
+
+def writeBLadderLines(CrossJ, CrossK, CrossKc, where):
+   global LinesToWriteToFile
+   for index in range (0,numberOfBLadderLines):
+       
+         # progress through quantum states up and/or down from cross state
+         localJ = CrossJ  - jBCrossLadderQuantumIncrements[0]    # when there are more than 1 cross ladder transitions, MUST CHANGE THIS
+         localK = CrossK
+         localKc= CrossKc - jBCrossLadderQuantumIncrements[0]
+         lineToWrite = repr(localJ+1 + jBQuantumIncrements[index]).rjust(3)+ str(localK).rjust(3)+ \
+             str(localKc+1 +jBQuantumIncrements[index]).rjust(3)+ \
+             str(localJ + jBQuantumIncrements[index]).rjust(3) +str(localK).rjust(3) +\
+             str(localKc + jBQuantumIncrements[index]).rjust(3)+ \
+             repr(Bfrequencies[index]).rjust(33) +  repr(uncertainty).rjust(11) + '\n'
+         print(lineToWrite)
+         LinesToWriteToFile[where+index] = lineToWrite
+
+
+
+
+
 
 def sort():
    if (rmsValuesArray[0] > rmsValuesArray[1]):
@@ -337,6 +394,7 @@ def processInputTextFile():
                   
                    print('Next Cross Ladder Line to Try: ' + lineToWrite)
                    LinesToWriteToFile[numberOfALadderLines] = lineToWrite
+                   writeBLadderLines(CrossLadderJ[index], CrossLadderK[index], CrossLadderKc[index],numberOfALadderLines+numberOfCrossLadderLines)
                    jArray[files_written]  =  j;                   kArray[files_written] = k;    kcPatchArray[files_written] = kcpatch
                    jbArray[files_written] =  CrossLadderJ[index]; kbArray[files_written] = CrossLadderK[index]
                    kbcArray[files_written]=  CrossLadderKc[index]
@@ -362,7 +420,7 @@ def processInputTextFile():
 
     print (str(files_written) + ' Files Written')   
     sort()
-    print('BestFitFinderwithCrossLadder.py')
+    print('CrossLadderA and B Ladder.py')
     print (str(files_written) + ' Files Written')
 
 def generateCrossLadderMatrix(j_passed,k, kc):
