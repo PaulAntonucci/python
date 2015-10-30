@@ -1,0 +1,19 @@
+# comment line
+// comment line  Fitter comes up with 9,1,0 for this
+
+number of frequencies = 4
+7565.2160	0 0
+8251.9650	1 0
+8926.6950	2 0
+9594.6150	3 0
+
+
+
+
+uncertainty = .1
+
+j_low  5
+j_high  15
+k_low  0
+k_high  7
+

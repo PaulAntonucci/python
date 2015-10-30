@@ -141,7 +141,7 @@ def openfile():
    processInputTextFile()
    
 def processFitFile(fileIndex):
-   print('fileIndex='+str(fileIndex))
+   # timing print('fileIndex='+str(fileIndex))
 
    CrossLineState = 1 # 1 if it's all fine, -1 is reversal is required
    f1=open('test.fit')
@@ -150,10 +150,10 @@ def processFitFile(fileIndex):
    endIsAt = len(lines)
    for index in range (0,endIsAt):
       if( 'rejected') in lines[index]:
-         print('rejected****************************************')
+         # timing print('rejected****************************************')
          rejectedArray[fileIndex] =1
       if( 'Bad Line') in lines[index]:
-         print('Bad Line****************************************')
+         # timing print('Bad Line****************************************')
          badLineArray[fileIndex] =1
 
    for index in range (endIsAt - 10,endIsAt-4):
@@ -162,13 +162,13 @@ def processFitFile(fileIndex):
          placesToSearch = lines[index].split()
          endOfPlacesToSearch = len(placesToSearch)         
          if( '-') in placesToSearch[endOfPlacesToSearch -2]:
-            print('Need to Reverse the order of Cross line quantum numbers **********************')
-            print(lines[index])
+            # timing print('Need to Reverse the order of Cross line quantum numbers **********************')
+            # timing print(lines[index])
             CrossLineState = -1
 
    for index in range (endIsAt-4,endIsAt):
       if( 'RMS ERROR=') in lines[index]:
-         print(lines[index])
+         # timing print(lines[index])
          placesToSearch = lines[index].split()
          endOfPlacesToSearch = len(placesToSearch)
          rmsValuesArray[fileIndex] = float(placesToSearch[endOfPlacesToSearch - 1])
@@ -335,7 +335,7 @@ def processInputTextFile():
                    lineToWrite = createCrossLadderLine(j+jCrossLadderQuantumIncrements[0],k, kcLocal, \
                                                        CrossLadderJ[index], CrossLadderK[index], CrossLadderKc[index])
                   
-                   print('Next Cross Ladder Line to Try: ' + lineToWrite)
+                   # timing print('Next Cross Ladder Line to Try: ' + lineToWrite)
                    LinesToWriteToFile[numberOfALadderLines] = lineToWrite
                    jArray[files_written]  =  j;                   kArray[files_written] = k;    kcPatchArray[files_written] = kcpatch
                    jbArray[files_written] =  CrossLadderJ[index]; kbArray[files_written] = CrossLadderK[index]
@@ -344,7 +344,7 @@ def processInputTextFile():
                    writeLinFile()
                    shutil.copy('test.parameters', 'test.par') # copy the parameters file to test.par
                    subprocess.call(["spfit", 'test']) # run spfit
-                   print('index='+str(j)+','+str(k)+','+str(kcpatch))
+                   # timing print('index='+str(j)+','+str(k)+','+str(kcpatch))
                    returnValue = processFitFile(files_written) # open the test.fit file, test for various problems including
                    # negative values for A, B, C,  (in which case switch order of cross ladder lines), and get the rms value in array for sorting
                    if(returnValue == -1):
@@ -353,7 +353,7 @@ def processInputTextFile():
                       writeLinFile()
                       shutil.copy('test.parameters', 'test.par') # copy the parameters file to test.par
                       subprocess.call(["spfit", 'test']) # run spfit
-                      print('Reversing Cross Ladder line - index='+str(j)+','+str(k)+','+str(kcpatch))
+                      # timing print('Reversing Cross Ladder line - index='+str(j)+','+str(k)+','+str(kcpatch))
                       processFitFile(files_written)
                    subprocess.call(["rm", 'test.par']) # delete the text.xyz files
                    subprocess.call(["rm", 'test.bak']) # run spfit
@@ -370,46 +370,46 @@ def generateCrossLadderMatrix(j_passed,k, kc):
              jb  = j_passed + 1
              kb = k + 1
              kbc = kc + 1
-             print ("B type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+             # timing print ("B type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
              CrossLadderJ[0] = jb; CrossLadderK[0] = kb; CrossLadderKc[0] = kbc
 
          else:
              jb  = j_passed + 1
              kb = k  -1
              kbc = kc + 1
-             print ("B type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+             # timing print ("B type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
              CrossLadderJ[0] = jb; CrossLadderK[0] = kb; CrossLadderKc[0] = kbc
              jb  = j_passed +1
              kb = k +1
              kbc = kc - 1
-             print ("B type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+             # timing print ("B type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
              CrossLadderJ[1] = jb; CrossLadderK[1] = kb; CrossLadderKc[1] = kbc
          if (kc != j_passed-k):
              jb  = j_passed - 1
              kb = k - 1
              kbc = kc - 1
-             print ("B type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+             # timing print ("B type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
              CrossLadderJ[2] = jb; CrossLadderK[2] = kb; CrossLadderKc[2] = kbc
          else:
              jb  = j_passed - 1
              kb = k  -1
              kbc = kc + 1
-             print ("B type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+             # timing print ("B type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
              CrossLadderJ[1] = jb; CrossLadderK[1] = kb; CrossLadderKc[1] = kbc
              jb  = j_passed - 1
              kb = k +1
              kbc = kc - 1
-             print ("B type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+             # timing print ("B type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
              CrossLadderJ[2] = jb; CrossLadderK[2] = kb; CrossLadderKc[2] = kbc
          # delta j = 0 transitions
          jb = j_passed
          kb = k - 1
          kbc = kc + 1
-         print ("B type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+         # timing print ("B type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[3] = jb; CrossLadderK[3] = kb; CrossLadderKc[3] = kbc
          kb = k+1
          kbc = kc -1
-         print ("B type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+         # timing print ("B type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[4] = jb; CrossLadderK[4] = kb; CrossLadderKc[4] = kbc         
 
 
@@ -418,11 +418,11 @@ def generateCrossLadderMatrix(j_passed,k, kc):
          kbc = kc    
          jb = j_passed+1
          kb = k +1
-         print ("C type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+         # timing print ("C type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[5] = jb; CrossLadderK[5] = kb; CrossLadderKc[5] = kbc
          jb = j_passed-1
          kb = k-1
-         print ("C type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+         # timing print ("C type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[6] = jb; CrossLadderK[6] = kb; CrossLadderKc[6] = kbc
          if(kc == j_passed-k):
              jb = j_passed
@@ -430,7 +430,7 @@ def generateCrossLadderMatrix(j_passed,k, kc):
          else:
              jb = j_passed
              kb = k - 1
-         print ("C type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+         # timing print ("C type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[7] = jb; CrossLadderK[7] = kb; CrossLadderKc[7] = kbc
 
 def createCrossLadderLine(jl,kl,kcl,jbl,kbl,kbcl):

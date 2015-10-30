@@ -1,0 +1,23 @@
+# comment line
+// comment line
+
+number of frequencies = 8
+7802.183	0 0
+8573.797	1 0
+9330.168	2 0
+10068.89	3 0
+7565.2160	0 1
+8251.9650	1 1
+8926.6950	2 1
+9594.6150	3 1
+
+
+
+
+uncertainty = .1
+
+j_low  5
+j_high  15
+k_low  0
+k_high  7
+
