@@ -6,7 +6,6 @@ from tkinter.filedialog import askopenfilename
 import subprocess
 import shutil
 import MatPlotDemo
-# import capitolLetter # restructuredClearSpectrum
 import ClearSpectrum2
 import CallScriptTest
 
