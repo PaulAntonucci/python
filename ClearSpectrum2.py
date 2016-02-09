@@ -7,6 +7,7 @@ from matplotlib.pyplot import *
 from mpl_toolkits.axes_grid1.axes_rgb import make_rgb_axes, RGBAxes
 import numpy as np
 from math import *
+import time
 
 # Yes, they really are
 # VARIABLES GLOBAL to the Module
@@ -14,27 +15,30 @@ from math import *
 # in getFileName
 spectrum_name = 'FromMarie/CP99_pzf1.sp'
 file_name = 'FromMarie/CP99_pzf1'
-known_freq_name = 'FromMarie/artefacts.cat'
-known_name = 'artitacts'
+known_freq_name = 'FromMarie/artifacts.cat'
+known_name = 'artifacts'
 ext = 'cat'
 factor = 1
 
-# in readInputFiles
+# in readSpectrumAndLineFiles
 freq_list_ini = []
 int_list_ini = []
+step = 1.0
 
 peak_freq_ini = []
 peak_int_ini = []
 peak_unc_ini = []
 peak_array = np.array( [peak_freq_ini, peak_int_ini, peak_unc_ini] )
 
+# in readKnownFile
 known_freq_array = []
-step = 1.0
 
+#in peak_assignment
 match_freq = []
 match_int = []
-match_peak_array = []
 
+# in createListOfPeaks
+match_peak_array = []
 peak_freq_end = []
 peak_int_end = []
 peak_unc_end = []
@@ -42,10 +46,38 @@ peak_freq_assign = []
 peak_int_assign = []
 peak_unc_assign = []
 
+#in ClearSpectrum
 freq_list_assign = []
 int_list_end = []
 freq_list_end = []
 int_list_assign = []
+
+
+def clearVariables():
+    global known_freq_array; global match_freq;     global match_int;
+    global match_peak_array; global peak_freq_end;  global peak_int_end; global peak_unc_end;
+    global peak_freq_assign; global peak_int_assign; global peak_unc_assign;
+    global freq_list_assign; global int_list_end;   global freq_list_end; global int_list_assign;
+
+    # del known_freq_array[:] - set to an np.array
+    #in peak_assignment
+    del match_freq[:]
+    del match_int[:]
+    
+    # in createListOfPeaks
+    # del match_peak_array[:] - set to an np.array
+    del peak_freq_end[:]
+    del peak_int_end[:]
+    del peak_unc_end[:]
+    del peak_freq_assign[:]
+    del peak_int_assign[:]
+    del peak_unc_assign[:]
+    #in ClearSpectrum
+    del freq_list_assign[:]
+    del int_list_end[:]
+    del freq_list_end[:]
+    del int_list_assign[:]
+
 
 #########################################################
 # BODY OF THE PROGRAM
@@ -89,14 +121,14 @@ def getFileName():
         known_name = known_name.split('/')[1]
 
     factor = 1
-    if ('artefacts' in known_name):
+    if ('artifacts' in known_name):
         factor = 2
 
 #--------------------------------------------------------------------
 # Read the spectrum file
 # and create a list of frequencies, and a list of intensities
 #--------------------------------------------------------------------
-def readInputFiles():
+def readSpectrumAndLineFiles():
     global freq_list_ini;   global int_list_ini
     global peak_freq_ini;   global peak_int_ini;    global peak_unc_ini;
     global peak_array;
@@ -142,17 +174,28 @@ def readInputFiles():
     print(lines_ini_length + ' initial experimental frequencies')
 
     peak_array = np.array( [peak_freq_ini, peak_int_ini, peak_unc_ini] )
+    
 
     #--------------------------------------------------------------------
     # Read the known freq file
     # Create a list and an array of known frequencies
     #--------------------------------------------------------------------
-
+def readKnownFile():
+    global known_freq_array
+    global known_name; global ext; global factor
     with open(known_freq_name, 'r') as known_freq_file:
         known_freq_lines = known_freq_file.read().splitlines()
         
     known_freq_list = []
     known_freq_int = []
+
+    known_name, ext = known_freq_name.split('.')
+    print("known name = " + known_name)
+    if ('/' in known_name):
+        known_name = known_name.split('/')[1]
+    factor = 1
+    if ('artifacts' in known_name):
+        factor = 2  
 
     for i in range(len(known_freq_lines)):
 
@@ -190,7 +233,7 @@ def readInputFiles():
 # and the list of known frequencies to find matches
 #---------------------------------------------------
 
-def peakAssignment():
+def peakAssignment(doNotPlot):
     global match_freq 
     global match_int
     index_list = []
@@ -199,8 +242,8 @@ def peakAssignment():
     # Initialize a counter for matches
     counter = 0
 
-    for i in range(len(known_freq_array)):
-        min_freq = np.abs(known_freq_array[i,0] - peak_array[0])
+    for i in range(len(known_freq_array)):          # PRAA note that peak_array[0] is a column of frequencies
+        min_freq = np.abs(known_freq_array[i,0] - peak_array[0])    # PRAA note that min_freq is an array
         index = np.argmin(min_freq)
         
         if (min_freq[index] < 0.2):
@@ -212,7 +255,7 @@ def peakAssignment():
             counter += 1
 
         # Exit the script if counter < i for the 3 strongest predicted lines
-        if (counter - i < 0 and 0 < i < 1):
+        if (counter - i < 0 and 0 < i < 1 and (doNotPlot == False)):
             print('No plausible line of ' + known_name + ' in the spectrum')
             
             #---------------------------------------------------
@@ -234,13 +277,12 @@ def peakAssignment():
             plot(freq_list_ini,int_list_ini)
             #
             show(block=True)
-            
             sys.exit()
             
           
         del(index)
 
-    if (counter == 0):
+    if ((counter == 0) and (doNotPlot == False)):
         print('No plausible line of ' + known_name + ' in the spectrum')
         
         #---------------------------------------------------
@@ -260,10 +302,12 @@ def peakAssignment():
         subplot(212, sharex=subplot(211)) 
         title ('Initial spectrum (red), Cleared spectrum (blue)')
         plot(freq_list_ini,int_list_ini)
-        #
-        show(block=True)
-        
-        sys.exit()  
+        # Remove the following two lines for testing Feb 9 2016 praa
+        # show(block=True)
+        show(block=False)
+        # sys.exit()
+        time.sleep(2)
+        print(" finished with this task, and sleeping for 2 seconds")
 
 #---------------------------------------------------
 # Creation of a reduce list of peaks
@@ -410,13 +454,11 @@ def exportTheClearedGraph():
 #---------------------------------------------------
 # PLOT
 #---------------------------------------------------
-def doNotCallItPlot():
+def renamedPlot():
     freq_list_a = []
     int_list_a = []
     freq_list_e = []
     int_list_e = []
-
-    print("in function plot - does this print out?")
 
     #For a nicer plot aspect
     for i in range(len(freq_list_assign)-1):
@@ -458,7 +500,6 @@ def doNotCallItPlot():
     plot(freq_list_a,int_list_a, color='red')
     plot(freq_list_e,int_list_e)
     vlines(match_peak_array, 1e-6, match_int, colors='gray', linestyle = '--')
-    #
     show(block=True)
 
 
@@ -471,13 +512,14 @@ if __name__ == "__main__":
     from math import *
     from mpl_toolkits.axes_grid1.axes_rgb import make_rgb_axes, RGBAxes
 
-    # getFileName()
-    readInputFiles()
-    peakAssignment()
+    getFileName()
+    readSpectrumAndLineFiles()
+    readKnownFile()
+    peakAssignment(False)
     createListsOfPeaks()
     clearSpectrum()
     exportTheClearedGraph()
-    doNotCallItPlot()
+    renamedPlot()
 
  
 
