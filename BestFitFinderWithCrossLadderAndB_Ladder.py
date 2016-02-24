@@ -4,15 +4,13 @@ from tkinter.filedialog import askopenfilename
 import subprocess
 import shutil
 
-
-
-
 #variables
-
 j =1
 k =2
 kc = 0
 kcpatch = 0
+printing = 1
+useNewParFile = 1
 
 frequencies =[7063.9800, 7822.1260, 7105.532, 7908.580, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, \
               0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -42,7 +40,7 @@ k_high = 7
 
 # dimension of array = (j_high - j_low) * (k_high - k_low) * 2 - (j_high - j_low) - for the instances when k = 0
 numberOfFiles = (j_high - j_low) * (k_high - k_low) * 2 - (j_high - j_low)
-maximumNumberOfFiles = 1000 # * numberOfFiles
+maximumNumberOfFiles = 10000 # * numberOfFiles
 
 
 jArray=[0 for i in range(maximumNumberOfFiles)]
@@ -56,6 +54,10 @@ badLineArray  = [ 0 for i in range(maximumNumberOfFiles)]
 rmsValuesArray=[0.1 for i in range(maximumNumberOfFiles)]
 rms2Array=[0.1 for i in range(maximumNumberOfFiles)]
 iterationNumberArray=[0 for i in range(maximumNumberOfFiles)]
+
+MAM_ct_B = 1.0
+MAM_ct_C = 1.0
+MAM_ct_A = 1.0
                                   
 firstPlaceIndex = 0
 secondPlaceIndex = 1
@@ -65,6 +67,8 @@ LinesToWriteToFile=["hello" for i in range (maximumNumberOfFileLines)] # ??"firs
 CrossLadderJ =[0 for i in range(0,10)]
 CrossLadderK =[0 for i in range(0,10)]
 CrossLadderKc=[0 for i in range(0,10)]
+
+debugCounter = 0
 
 def openfile():
    global frequencies
@@ -79,12 +83,15 @@ def openfile():
    global kBQuantumIncrements
    global uncertainty
    global numberOfALadderLines
-   global numberofBLadderLines
+   global numberOfBLadderLines
    global numberOfFiles
    global crossLadderFrequencies
    global jCrossLadderQuantumIncrements
    global jBCrossLadderQuantumIncrements
    global numberOfCrossLadderLines
+   global MAM_ct_B
+   global MAM_ct_C
+   global MAM_ct_A
 
    filename = askopenfilename(parent=root)
    f = open(filename)
@@ -96,6 +103,7 @@ def openfile():
          placesToSearch = lines[index].split()
          endOfPlacesToSearch = len(placesToSearch)
          numberOfALadderLines = int(placesToSearch[endOfPlacesToSearch - 1])
+         print (" Number of A ladder lines" + str(numberOfALadderLines))
          for secondIndex in range (0, numberOfALadderLines):
             inputData = lines[index+1+secondIndex].split()
             frequencies[secondIndex] = float(inputData[0])
@@ -108,12 +116,13 @@ def openfile():
          placesToSearch = lines[index].split()
          endOfPlacesToSearch = len(placesToSearch)
          numberOfBLadderLines = int(placesToSearch[endOfPlacesToSearch - 1])
+         print("number of B ladder lines" + str(numberOfBLadderLines))
          for secondIndex in range (0, numberOfALadderLines):
             inputData = lines[index+1+secondIndex].split()
             Bfrequencies[secondIndex] = float(inputData[0])
             jBQuantumIncrements[secondIndex] = int(inputData[1])
             kBQuantumIncrements[secondIndex] = int(inputData[2])
-            print('B freq:'+ str(Bfrequencies[secondIndex]))
+            if (printing ): print('B freq:'+ str(Bfrequencies[secondIndex]))
             
          index+= 1+secondIndex
 
@@ -127,7 +136,7 @@ def openfile():
             crossLadderFrequencies[secondIndex] = float(inputData[0])
             jCrossLadderQuantumIncrements[secondIndex] = int(inputData[1])
             # kQuantumIncrements[secondIndex] = int(inputData[2])
-            print("cross ladder" + str(crossLadderFrequencies[secondIndex]))
+            if (printing ): print("cross ladder" + str(crossLadderFrequencies[secondIndex]))
             
          index+= 1+secondIndex
 
@@ -136,7 +145,7 @@ def openfile():
          for secondIndex in range (0, numberOfCrossLadderLines):
             inputData = lines[index+1+secondIndex].split()
             jBCrossLadderQuantumIncrements[secondIndex] = int(inputData[1])
-            print("cross ladder Jb displacement" + str(jBCrossLadderQuantumIncrements[secondIndex]))   
+            if (printing ): print("cross ladder Jb displacement" + str(jBCrossLadderQuantumIncrements[secondIndex]))   
          index+= 1+secondIndex
 
     
@@ -174,10 +183,22 @@ def openfile():
    str(jCrossLadderQuantumIncrements[0]),str(jCrossLadderQuantumIncrements[1]))
    numberOfFiles = newNumberOfFiles
    f.close()
+
+   # Calculate initial  estimates for A, B, and C
+   energy = frequencies[1] - frequencies[0]
+   if (energy<0): energy = -1* energy
+   MAM_ct_B = energy/ 1.8
+   MAM_ct_C = MAM_ct_B * .8
+   MAM_ct_A = 1.0/MAM_ct_C - 1.0/MAM_ct_B
+   MAM_ct_A = 1/MAM_ct_A
+   print ("Initial A, B, C estimates are %.2f, %.2f, %.2f " % (MAM_ct_A, MAM_ct_B, MAM_ct_C))
+
    processInputTextFile()
+
    
 def processFitFile(fileIndex):
-   print('fileIndex='+str(fileIndex))
+   global debugCounter
+   if (printing ): print('fileIndex='+str(fileIndex))
 
    CrossLineState = 1 # 1 if it's all fine, -1 is reversal is required
    f1=open('test.fit')
@@ -186,11 +207,15 @@ def processFitFile(fileIndex):
    endIsAt = len(lines)
    for index in range (0,endIsAt):
       if( 'rejected') in lines[index]:
-         print('rejected****************************************')
+         if (printing ): print('rejected****************************************')
          rejectedArray[fileIndex] =1
+      else:
+         rejectedArray[fileIndex] =0
       if( 'Bad Line') in lines[index]:
-         print('Bad Line****************************************')
+         if (printing ): print('Bad Line****************************************')
          badLineArray[fileIndex] =1
+      else:
+         badLineArray[fileIndex] =0
 
    for index in range (endIsAt - 10,endIsAt-4):
       if( (( '10000') in lines[index]) or  (('20000') in lines[index])or (('30000') in lines[index]) )  :
@@ -198,13 +223,13 @@ def processFitFile(fileIndex):
          placesToSearch = lines[index].split()
          endOfPlacesToSearch = len(placesToSearch)         
          if( '-') in placesToSearch[endOfPlacesToSearch -2]:
-            print('Need to Reverse the order of Cross line quantum numbers **********************')
-            print(lines[index])
+            if (printing ): print('Need to Reverse the order of Cross line quantum numbers **********************')
+            if (printing ): print(lines[index])
             CrossLineState = -1
 
    for index in range (endIsAt-4,endIsAt):
       if( 'RMS ERROR=') in lines[index]:
-         print(lines[index])
+         if (printing ): print(lines[index])
          placesToSearch = lines[index].split()
          endOfPlacesToSearch = len(placesToSearch)
          rmsValuesArray[fileIndex] = float(placesToSearch[endOfPlacesToSearch - 1])
@@ -215,20 +240,22 @@ def processFitFile(fileIndex):
          #print(str(iterationNumberArray[fileIndex]))
 
 
-   if((fileIndex == 117) or (fileIndex == 111) or (fileIndex == 64)):
+   if((fileIndex == 1) or (fileIndex == 134) or (fileIndex == 64)):
    #    test.fit
-      filename = 'test' + str(fileIndex)
+      filename = 'test' + str(fileIndex) + str(debugCounter) + '.fit'
       outf = open(filename, 'w')  
       for index in range (0,endIsAt):
          lineToWrite = lines[index]
          outf.write(lineToWrite)  
       outf.close()
+      debugCounter +=1;
    return(CrossLineState)
 
 
    
-def writeLinFile():
+def writeLinFile(fileIndex):
    global LinesToWriteToFile
+   global debugCounter
    #filename = 'test' + str(j)+'_'+str(k) + '_' +str(kcpatch)+ str(filesWritten) + '.lin'
    filename = 'test.lin'
 
@@ -239,6 +266,17 @@ def writeLinFile():
       outf.write(lineToWrite)
         
    outf.close()
+
+   if((fileIndex == 1) or (fileIndex == 134) or (fileIndex == 64)):
+   #    test.fit
+      filename = 'testLIN' + str(fileIndex) + str(debugCounter)
+      outf = open(filename, 'w')  
+      for index in range (0,numberOfALadderLines + numberOfCrossLadderLines + numberOfBLadderLines ):
+         lineToWrite = LinesToWriteToFile[index]
+         outf.write(lineToWrite)  
+      outf.close()
+
+
 
    # or maybe save the A lines . . . . 
                        
@@ -266,15 +304,31 @@ def writeBLadderLines(CrossJ, CrossK, CrossKc, where):
          localJ = CrossJ  - jBCrossLadderQuantumIncrements[0]    # when there are more than 1 cross ladder transitions, MUST CHANGE THIS
          localK = CrossK
          localKc= CrossKc - jBCrossLadderQuantumIncrements[0]
+         localKc= CrossKc
          lineToWrite = repr(localJ+1 + jBQuantumIncrements[index]).rjust(3)+ str(localK).rjust(3)+ \
              str(localKc+1 +jBQuantumIncrements[index]).rjust(3)+ \
              str(localJ + jBQuantumIncrements[index]).rjust(3) +str(localK).rjust(3) +\
              str(localKc + jBQuantumIncrements[index]).rjust(3)+ \
              repr(Bfrequencies[index]).rjust(33) +  repr(uncertainty).rjust(11) + '\n'
-         print(lineToWrite)
+         if (printing ): print(lineToWrite)
          LinesToWriteToFile[where+index] = lineToWrite
 
-
+def writeNewParFile():
+   # print("writing par file")
+   with open('test.par', 'w') as par_file:
+      par_file.write('U-molecule                                 Fri Oct 1Tue Jun 1Thu Mar 12 11:33:05 2015\n')
+      par_file.write(' 3    5   10    0     0.0000E+00     1.0000E+06     1.0000E+00 1.0000000000\n')
+      par_file.write('a     1  1   0   9   0  1   1   1   1  -1   0\n')
+      par_file.write('    10000  ')
+      par_file.write(str(MAM_ct_A))
+      par_file.write('  1.0E+10\n') 
+      par_file.write('    20000  ')
+      par_file.write(str(MAM_ct_B))
+      par_file.write('  1.0E+10\n')
+      par_file.write('    30000  ')
+      par_file.write(str(MAM_ct_C))
+      par_file.write('  1.0E+10\n')
+      par_file.close()
 
 
 
@@ -312,6 +366,7 @@ def sort():
    print('Third = ' +str(thirdPlaceIndex))
    print(str(numberOfFiles))
    for index in range (3,numberOfFiles):
+      print("index, rms value:" , index, str( rmsValuesArray[index]))
       if(rmsValuesArray[index] <=0):
          #do nothing in the case of = 0
          print('ZERO')
@@ -392,26 +447,34 @@ def processInputTextFile():
                    lineToWrite = createCrossLadderLine(j+jCrossLadderQuantumIncrements[0],k, kcLocal, \
                                                        CrossLadderJ[index], CrossLadderK[index], CrossLadderKc[index])
                   
-                   print('Next Cross Ladder Line to Try: ' + lineToWrite)
+                   if (printing ): print('Next Cross Ladder Line to Try: ' + lineToWrite)
                    LinesToWriteToFile[numberOfALadderLines] = lineToWrite
                    writeBLadderLines(CrossLadderJ[index], CrossLadderK[index], CrossLadderKc[index],numberOfALadderLines+numberOfCrossLadderLines)
                    jArray[files_written]  =  j;                   kArray[files_written] = k;    kcPatchArray[files_written] = kcpatch
                    jbArray[files_written] =  CrossLadderJ[index]; kbArray[files_written] = CrossLadderK[index]
                    kbcArray[files_written]=  CrossLadderKc[index]
                    
-                   writeLinFile()
-                   shutil.copy('test.parameters', 'test.par') # copy the parameters file to test.par
+                   writeLinFile(files_written)
+
+                   if(useNewParFile==1):
+                      writeNewParFile()
+                   else:
+                      shutil.copy('test.parameters', 'test.par') # copy the parameters file to test.par
                    subprocess.call(["spfit", 'test']) # run spfit
-                   print('index='+str(j)+','+str(k)+','+str(kcpatch))
+                   if (printing ): print('index='+str(j)+','+str(k)+','+str(kcpatch))
                    returnValue = processFitFile(files_written) # open the test.fit file, test for various problems including
                    # negative values for A, B, C,  (in which case switch order of cross ladder lines), and get the rms value in array for sorting
                    if(returnValue == -1):
                       lineToWrite = createCrossLadderLine(CrossLadderJ[index], CrossLadderK[index], CrossLadderKc[index], j+jCrossLadderQuantumIncrements[0],k, kcLocal)
                       LinesToWriteToFile[numberOfALadderLines] = lineToWrite
-                      writeLinFile()
-                      shutil.copy('test.parameters', 'test.par') # copy the parameters file to test.par
+                      writeLinFile(files_written)
+                      #  par file should be the same shutil.copy('test.parameters', 'test.par') # copy the parameters file to test.par
+                      if(useNewParFile==1):
+                         writeNewParFile()
+                      else:
+                         shutil.copy('test.parameters', 'test.par') # copy the parameters file to test.par                      subprocess.call(["spfit", 'test']) # run spfit
+                      if (printing ): print('Reversing Cross Ladder line - index='+str(j)+','+str(k)+','+str(kcpatch) + "line:" + lineToWrite)
                       subprocess.call(["spfit", 'test']) # run spfit
-                      print('Reversing Cross Ladder line - index='+str(j)+','+str(k)+','+str(kcpatch))
                       processFitFile(files_written)
                    subprocess.call(["rm", 'test.par']) # delete the text.xyz files
                    subprocess.call(["rm", 'test.bak']) # run spfit
@@ -428,46 +491,46 @@ def generateCrossLadderMatrix(j_passed,k, kc):
              jb  = j_passed + 1
              kb = k + 1
              kbc = kc + 1
-             print ("B type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+             if (printing ): print ("B (b1) type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
              CrossLadderJ[0] = jb; CrossLadderK[0] = kb; CrossLadderKc[0] = kbc
 
          else:
              jb  = j_passed + 1
              kb = k  -1
              kbc = kc + 1
-             print ("B type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+             if (printing ): print ("B (b2) type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
              CrossLadderJ[0] = jb; CrossLadderK[0] = kb; CrossLadderKc[0] = kbc
              jb  = j_passed +1
              kb = k +1
              kbc = kc - 1
-             print ("B type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+             if (printing ): print ("B (b3) type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
              CrossLadderJ[1] = jb; CrossLadderK[1] = kb; CrossLadderKc[1] = kbc
          if (kc != j_passed-k):
              jb  = j_passed - 1
              kb = k - 1
              kbc = kc - 1
-             print ("B type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+             if (printing ): print ("B (b10) type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
              CrossLadderJ[2] = jb; CrossLadderK[2] = kb; CrossLadderKc[2] = kbc
          else:
              jb  = j_passed - 1
              kb = k  -1
              kbc = kc + 1
-             print ("B type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+             if (printing ): print ("B (b9) type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
              CrossLadderJ[1] = jb; CrossLadderK[1] = kb; CrossLadderKc[1] = kbc
              jb  = j_passed - 1
              kb = k +1
              kbc = kc - 1
-             print ("B type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+             if (printing ): print ("B (b8) type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
              CrossLadderJ[2] = jb; CrossLadderK[2] = kb; CrossLadderKc[2] = kbc
          # delta j = 0 transitions
          jb = j_passed
          kb = k - 1
          kbc = kc + 1
-         print ("B type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+         if (printing ): print ("B (b4 or b6) type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[3] = jb; CrossLadderK[3] = kb; CrossLadderKc[3] = kbc
          kb = k+1
          kbc = kc -1
-         print ("B type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+         if (printing ): print ("B (b5 or b7) type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[4] = jb; CrossLadderK[4] = kb; CrossLadderKc[4] = kbc         
 
 
@@ -476,11 +539,11 @@ def generateCrossLadderMatrix(j_passed,k, kc):
          kbc = kc    
          jb = j_passed+1
          kb = k +1
-         print ("C type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+         if (printing ): print ("C type transition - delta J=+1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[5] = jb; CrossLadderK[5] = kb; CrossLadderKc[5] = kbc
          jb = j_passed-1
          kb = k-1
-         print ("C type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+         if (printing ): print ("C type transition - delta J=-1  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[6] = jb; CrossLadderK[6] = kb; CrossLadderKc[6] = kbc
          if(kc == j_passed-k):
              jb = j_passed
@@ -488,7 +551,7 @@ def generateCrossLadderMatrix(j_passed,k, kc):
          else:
              jb = j_passed
              kb = k - 1
-         print ("C type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
+         if (printing ): print ("C type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[7] = jb; CrossLadderK[7] = kb; CrossLadderKc[7] = kbc
 
 def createCrossLadderLine(jl,kl,kcl,jbl,kbl,kbcl):

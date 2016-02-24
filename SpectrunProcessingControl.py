@@ -10,6 +10,7 @@ import ClearSpectrum2
 import CallScriptTest
 import PeakFinder_BlackChirp2
 import time
+import os
 
 inputFilename = 'defaultInputFileName'
 
@@ -257,13 +258,13 @@ class MyApp:
         ClearSpectrum2.spectrum_name = baseNameThatCameIn + '.sp'
         ClearSpectrum2.file_name = baseNameThatCameIn
         ClearSpectrum2.known_freq_name = 'FromMarie/artifacts.cat'
-        # ClearSpectrum2.known_name = 'artifacts'
+        # ClearSpectrum2.known_name = 'artifacts' - now calculated in ClearSpectrum2.py praa Feb 10 2016
         ClearSpectrum2.readSpectrumAndLineFiles()
         ClearSpectrum2.readKnownFile()
-        ClearSpectrum2.peakAssignment(False)
+        ClearSpectrum2.peakAssignment(False)    # False means it's not necessary to supress the plot
         ClearSpectrum2.createListsOfPeaks()
         ClearSpectrum2.clearSpectrum()
-        ClearSpectrum2.exportTheClearedGraph()
+        ClearSpectrum2.exportTheClearedFiles()
         ClearSpectrum2.renamedPlot()
 
     def removeContaminants(self, event):
@@ -296,37 +297,44 @@ class MyApp:
             if (ClearSpectrum2.known_freq_name != 'none'):
                 ClearSpectrum2.clearVariables()
                 ClearSpectrum2.readKnownFile()
+                # the argument True means "doNotPlot"
                 ClearSpectrum2.peakAssignment(True)
                 ClearSpectrum2.createListsOfPeaks()
                 # ClearSpectrum2.clearSpectrum()
-                # ClearSpectrum2.exportTheClearedGraph()
+                # ClearSpectrum2.exportTheClearedFiles()
                 # ClearSpectrum2.renamedPlot()
-                time.sleep(2)
+                # time.sleep(2)
 
         self.commonVariable1 = 4
         self.checkBox3.select()
 
     def removeMolecularLines(self, event):
+        global inputFilename
         print ('removing molecular lines')
         self.commonVariable1 = 5
         self.checkBox10.select()
-        global inputFilename
         print('inputFilename=', inputFilename)
         splitName = inputFilename.split('.')
         baseNameThatCameIn = splitName[0]
         fileType = splitName[1]  
         ClearSpectrum2.spectrum_name = baseNameThatCameIn + '.sp'
         ClearSpectrum2.file_name = baseNameThatCameIn
-        ClearSpectrum2.known_freq_name = 'MoleculeCatFiles/c5h.cat'
-        # ClearSpectrum2.known_name = 'c5h.cat'
-        # ClearSpectrum2.readSpectrumAndLineFiles()
-        ClearSpectrum2.clearVariables()
-        ClearSpectrum2.readKnownFile()
-        ClearSpectrum2.peakAssignment(False)
-        ClearSpectrum2.createListsOfPeaks()
-        ClearSpectrum2.clearSpectrum()
-        ClearSpectrum2.exportTheClearedGraph()
-        ClearSpectrum2.renamedPlot()
+
+
+        path = "MoleculeCatFiles"
+        for localCatFileName in os.listdir(path):
+            print(localCatFileName)
+            if(".cat" in localCatFileName):
+                ClearSpectrum2.known_freq_name = 'MoleculeCatFiles/' + localCatFileName
+                ClearSpectrum2.clearVariables()
+                ClearSpectrum2.readKnownFile()
+                ClearSpectrum2.peakAssignment(True) # True means doNotPlot
+                ClearSpectrum2.createListsOfPeaks()
+##                ClearSpectrum2.clearSpectrum()
+##                ClearSpectrum2.exportTheClearedFiles()
+##                ClearSpectrum2.renamedPlot()
+
+        
         
     def addAdditionalElement(self, event):
         print ('adding additional element - ', self.comboBox3.get())

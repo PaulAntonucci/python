@@ -5,6 +5,9 @@ from tkinter.filedialog import askopenfile
 from tkinter.filedialog import askopenfilename
 from tkinter.filedialog import asksaveasfilename
 from tkinter.filedialog import askdirectory
+import os
+
+
 class TkFileDialogExample(tkinter.Frame):
 
   def __init__(self, root):
@@ -83,6 +86,8 @@ class TkFileDialogExample(tkinter.Frame):
       return open(filename, 'w')
 
   def askdirectory(self):
+
+
 
     """Returns a selected directoryname."""
 
