@@ -9,8 +9,9 @@ j =1
 k =2
 kc = 0
 kcpatch = 0
-printing = 1
+printing = 0
 useNewParFile = 1
+deltaJEqualsZero = 0
 
 frequencies =[7063.9800, 7822.1260, 7105.532, 7908.580, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, \
               0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -427,9 +428,12 @@ def processInputTextFile():
     global kbArray
     global kbcArray
     global LinesToWriteToFile
+    global deltaJEqualsZero
 
     
     files_written = 0
+    crossLadderReversals = 0
+    deltaJEqualsZero = 0
     
     for j in range (j_low, j_high):
        for k in range (k_low, k_high):
@@ -465,6 +469,7 @@ def processInputTextFile():
                    returnValue = processFitFile(files_written) # open the test.fit file, test for various problems including
                    # negative values for A, B, C,  (in which case switch order of cross ladder lines), and get the rms value in array for sorting
                    if(returnValue == -1):
+                      crossLadderReversals += 1
                       lineToWrite = createCrossLadderLine(CrossLadderJ[index], CrossLadderK[index], CrossLadderKc[index], j+jCrossLadderQuantumIncrements[0],k, kcLocal)
                       LinesToWriteToFile[numberOfALadderLines] = lineToWrite
                       writeLinFile(files_written)
@@ -484,9 +489,12 @@ def processInputTextFile():
     print (str(files_written) + ' Files Written')   
     sort()
     print('CrossLadderA and B Ladder.py')
-    print (str(files_written) + ' Files Written')
-
+    print (str(files_written) + ' Separately Numbered Files Written')
+    print (str((crossLadderReversals+files_written)) + ' Total Files Written')
+    print (str((deltaJEqualsZero)) + ' Delta J=0 Files Written')
+    
 def generateCrossLadderMatrix(j_passed,k, kc):
+         global deltaJEqualsZero
          if (kc == j_passed-k):
              jb  = j_passed + 1
              kb = k + 1
@@ -528,11 +536,12 @@ def generateCrossLadderMatrix(j_passed,k, kc):
          kbc = kc + 1
          if (printing ): print ("B (b4 or b6) type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[3] = jb; CrossLadderK[3] = kb; CrossLadderKc[3] = kbc
+         deltaJEqualsZero +=1
          kb = k+1
          kbc = kc -1
          if (printing ): print ("B (b5 or b7) type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[4] = jb; CrossLadderK[4] = kb; CrossLadderKc[4] = kbc         
-
+         deltaJEqualsZero +=1
 
 
          # C type transition   - delta Kc = 0 for all C type
@@ -553,6 +562,7 @@ def generateCrossLadderMatrix(j_passed,k, kc):
              kb = k - 1
          if (printing ): print ("C type transition - delta J= 0  j,k,kc,jb,kb,kbc " ,str(j_passed),str(k),str(kc),str(jb),str(kb),str(kbc))
          CrossLadderJ[7] = jb; CrossLadderK[7] = kb; CrossLadderKc[7] = kbc
+         deltaJEqualsZero += 1
 
 def createCrossLadderLine(jl,kl,kcl,jbl,kbl,kbcl):
          lineToAdd = repr(jbl).rjust(3)+ str(kbl).rjust(3)+  str(kbcl).rjust(3)+ \

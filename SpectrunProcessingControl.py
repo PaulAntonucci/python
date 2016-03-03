@@ -13,6 +13,7 @@ import time
 import os
 
 inputFilename = 'defaultInputFileName'
+listOfAllMolecules = []
 
 class MyApp:
     def __init__(self, myParent):
@@ -383,6 +384,74 @@ def report_event(event):
         print ("Time =", str(event.time))
         print ('type =', str(event.type), event_name[str(event.type)])
         print ('EventWidgetId' + str(event.widget), 'eventKey symbol' +str(event.keysym))
+
+def initializeListOfAllMolecules():
+    global listOfAllMolecules
+    # get from a directory the list of all molecules,
+    # append each one to the list
+    import glob
+    import os
+    from copy import deepcopy
+    
+    path = 'MoleculeHeaderFiles'
+    moleculeIndex = 0
+    localMolecule = ["frog","soon"]
+    for filename in glob.glob(os.path.join(path,'*.h')):
+        print("Filename: ", filename)
+        f = open(filename, 'r')
+        lines = f.readlines()
+        endIsAt = len(lines)
+        # scan through to build up a molecule, then add it to the structure when done
+        for index in range (0,endIsAt):
+            print("Index=:", index)
+            print("lines[index] " + lines[index])
+            if('Name:') in lines[index]:
+                localMolecule[0] = lines[index]
+            if('Atoms:') in lines[index]:
+                print(localMolecule)
+                #remove commas
+                # something like this?  or just a search and replace? localMolecule[1] = lines[index].split(,)                
+                localMolecule[1] = lines[index].split()
+                #for nextIndex in range numberOfAtoms:
+                #    localAtoms.apend(
+                # some sort of split
+        # but listOfAllMolecules is not long enough yet - so append something, then do a deep copy
+        listOfAllMolecules.append([1,2,3])
+        listOfAllMolecules[moleculeIndex] = deepcopy(localMolecule)
+        moleculeIndex +=1
+        print("internal ", listOfAllMolecules)
+    print(listOfAllMolecules)
+    atoms = ["Atoms:", "C", "S", "H"]
+    response = createListOfPossibleMolecules(atoms)
+    print("List of possible molecules: " + str(response))
+                
+
+def createListOfPossibleMolecules(atoms):
+    listOfPossibleMolecules = []
+
+    for(molecule) in listOfAllMolecules:
+        possible = True
+        print("Molecule: "+ str(molecule[0]))
+        for atom in molecule[1]:
+            if atom in atoms:
+                print ("present " + str(atom))
+            else:
+                print ("not present " + str(atom))
+                possible = False
+        # if(words) in atoms:
+        # for(nextAtom) in molecule.listOfAtoms():
+        #    if(atom) not_in atoms  break
+        #or use Python sets and subsets . .
+        # set1 = set(molecules.listOfAtoms)
+        # set2 = set(atoms)
+        # if set1.issubset(set2)
+        if(possible):
+            print("possible")
+            listOfPossibleMolecules.append(molecule)
+        else:
+            print("Not possible")
+    return(listOfPossibleMolecules)
+    
            
 def molecularLinesMatchTest(molecule):
     print ("Calling molecularLinesMatchTest - ")
@@ -415,6 +484,7 @@ filemenu.add_command(label="Exit", command=root.quit)
 menubar.add_cascade(label="File", menu=filemenu)
 root.config(menu=menubar)
 
+initializeListOfAllMolecules()
 
 
 
