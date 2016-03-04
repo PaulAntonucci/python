@@ -320,17 +320,19 @@ class MyApp:
         fileType = splitName[1]  
         ClearSpectrum2.spectrum_name = baseNameThatCameIn + '.sp'
         ClearSpectrum2.file_name = baseNameThatCameIn
-
+        atoms = ["Atoms:", "C", "S", "H"]
+        listOfMolecluesToTry = createListOfPossibleMolecules(atoms)
 
         path = "MoleculeCatFiles"
-        for localCatFileName in os.listdir(path):
+        for molecule in listOfMolecluesToTry:
+            print("molecule " + str(molecule))
+            localCatFileName = molecule[2] + ".cat"
             print(localCatFileName)
-            if(".cat" in localCatFileName):
-                ClearSpectrum2.known_freq_name = 'MoleculeCatFiles/' + localCatFileName
-                ClearSpectrum2.clearVariables()
-                ClearSpectrum2.readKnownFile()
-                ClearSpectrum2.peakAssignment(True) # True means doNotPlot
-                ClearSpectrum2.createListsOfPeaks()
+            ClearSpectrum2.known_freq_name = 'MoleculeCatFiles/' + localCatFileName
+            ClearSpectrum2.clearVariables()
+            ClearSpectrum2.readKnownFile()
+            ClearSpectrum2.peakAssignment(True) # True means doNotPlot
+            ClearSpectrum2.createListsOfPeaks()
 ##                ClearSpectrum2.clearSpectrum()
 ##                ClearSpectrum2.exportTheClearedFiles()
 ##                ClearSpectrum2.renamedPlot()
@@ -395,7 +397,7 @@ def initializeListOfAllMolecules():
     
     path = 'MoleculeHeaderFiles'
     moleculeIndex = 0
-    localMolecule = ["frog","soon"]
+    localMolecule = ["Name: xx","Atoms: xx", "Filename"]
     for filename in glob.glob(os.path.join(path,'*.h')):
         print("Filename: ", filename)
         f = open(filename, 'r')
@@ -409,13 +411,14 @@ def initializeListOfAllMolecules():
                 localMolecule[0] = lines[index]
             if('Atoms:') in lines[index]:
                 print(localMolecule)
-                #remove commas
-                # something like this?  or just a search and replace? localMolecule[1] = lines[index].split(,)                
+                #remove commas    ??  below . . .            
                 localMolecule[1] = lines[index].split()
-                #for nextIndex in range numberOfAtoms:
-                #    localAtoms.apend(
-                # some sort of split
+
         # but listOfAllMolecules is not long enough yet - so append something, then do a deep copy
+        baseName = filename.split('.')[0]
+        if ('/' in baseName):
+            baseName = baseName.split('/')[1]
+        localMolecule[2] = baseName
         listOfAllMolecules.append([1,2,3])
         listOfAllMolecules[moleculeIndex] = deepcopy(localMolecule)
         moleculeIndex +=1
@@ -433,23 +436,20 @@ def createListOfPossibleMolecules(atoms):
         possible = True
         print("Molecule: "+ str(molecule[0]))
         for atom in molecule[1]:
-            if atom in atoms:
-                print ("present " + str(atom))
+            print("original ",atom)
+            # remove commas
+            filtered = atom.replace (',','')
+            print("commas removed ",filtered)
+            if filtered in atoms:
+                print ("present " + str(filtered))
             else:
-                print ("not present " + str(atom))
+                print ("not present " + str(filtered))
                 possible = False
-        # if(words) in atoms:
-        # for(nextAtom) in molecule.listOfAtoms():
-        #    if(atom) not_in atoms  break
-        #or use Python sets and subsets . .
-        # set1 = set(molecules.listOfAtoms)
-        # set2 = set(atoms)
-        # if set1.issubset(set2)
         if(possible):
-            print("possible")
+            print("possible\n")
             listOfPossibleMolecules.append(molecule)
         else:
-            print("Not possible")
+            print("Not possible\n")
     return(listOfPossibleMolecules)
     
            
