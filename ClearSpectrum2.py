@@ -198,7 +198,9 @@ def readKnownFile():
         factor = 2  
 
     for i in range(len(known_freq_lines)):
-
+        #if(known_name == "h2c6"):
+        #    print ("i:", i)
+        #    print (known_freq_lines[i])
         known_freq  = known_freq_lines[i].split()[0]
             
         if (ext == 'list'): # case of just a frequency list
@@ -308,6 +310,7 @@ def peakAssignment(doNotPlot):
         # sys.exit()
         time.sleep(2)
         print(" finished with this task, and sleeping for 2 seconds")
+    return(counter)
 
 #---------------------------------------------------
 # Creation of a reduce list of peaks
@@ -358,8 +361,11 @@ def createListsOfPeaks():
     # is equal to the initial number of peaks
     #check = len(peak_lines) - len(peaks_assigned) - len(peak_lines_end)
 
-    print(str(len(match_freq)) + ' matching frequencies in ' + known_freq_name)  
-    print(str(len(peak_freq_ini) - len(peak_freq_end)) + ' peak removed')    
+    print(str(len(match_freq)) + ' matching frequencies in ' + known_freq_name)
+
+    print(str(len(peak_freq_ini) - len(peak_freq_end)) + ' peak removed')
+    if (len(match_freq) >  (len(peak_freq_ini) - len(peak_freq_end))):
+        print("Mismatch !  Matching Frequencies: "+ str(match_freq))
     #print(peaks_assigned)
     print(str(len(peak_freq_end)) + ' remaining peaks')
     #print('----------------------')

@@ -54,7 +54,7 @@ for index in range (0,10):
 
 
 for index in range (0,10):
-    RawData = 5120 + 25 * (5 - index)
+    RawData = 5120 + 300 * (5 - index)
     convertRawDataToR(RawData)
     calculateT(R)
 

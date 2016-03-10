@@ -13,6 +13,7 @@ import time
 import os
 
 inputFilename = 'defaultInputFileName'
+printing = False
 listOfAllMolecules = []
 
 class MyApp:
@@ -127,14 +128,14 @@ class MyApp:
         self.checkBox10.grid(row=30, column = 1)
         self.label2 = Label(self.myContainer1, text = "Atoms Present")
         self.label2.grid(row=31, column = 0)
-        self.checkBox11 = Checkbutton(self.myContainer1, text = "C", variable = self.checkBoxC, onvalue=1,offvalue=0).place(x=75,y=elementsYOffset)
-        self.checkBox12 = Checkbutton(self.myContainer1, text = "S", variable = self.checkBoxS, onvalue=1,offvalue=0).place(x=150, y=elementsYOffset)
-        self.checkBox13 = Checkbutton(self.myContainer1, text = "O", variable = self.checkBoxO, onvalue=1,offvalue=0)
+        self.checkBox11 = Checkbutton(self.myContainer1, text = "H", variable = self.checkBoxH, onvalue=1,offvalue=0).place(x=75,y=elementsYOffset)
+        self.checkBox12 = Checkbutton(self.myContainer1, text = "C", variable = self.checkBoxC, onvalue=1,offvalue=0).place(x=150, y=elementsYOffset)
+        self.checkBox13 = Checkbutton(self.myContainer1, text = "N", variable = self.checkBoxN, onvalue=1,offvalue=0)
         #self.checkBox13.grid(row=32, column = 2)
         self.checkBox13.place(x = 225,y=elementsYOffset)
-        self.checkBox14 = Checkbutton(self.myContainer1, text = "H", variable = self.checkBoxH, onvalue=1,offvalue=0).place(x=75,y=elementsYOffset + 25)
+        self.checkBox14 = Checkbutton(self.myContainer1, text = "O", variable = self.checkBoxO, onvalue=1,offvalue=0).place(x=75,y=elementsYOffset + 25)
         self.checkBox15 = Checkbutton(self.myContainer1, text = "Si", variable = self.checkBoxSi, onvalue=1,offvalue=0).place(x=150,y=elementsYOffset + 25)
-        self.checkBox16 = Checkbutton(self.myContainer1, text = "N", variable = self.checkBoxN, onvalue=1,offvalue=0)
+        self.checkBox16 = Checkbutton(self.myContainer1, text = "S", variable = self.checkBoxS, onvalue=1,offvalue=0)
         self.checkBox16.place(x=225, y = elementsYOffset +25)
 
         self.label2 = Label(self.myContainer1, text = "Additional Atoms")
@@ -311,6 +312,7 @@ class MyApp:
 
     def removeMolecularLines(self, event):
         global inputFilename
+        listOfMoleculesPresent = []
         print ('removing molecular lines')
         self.commonVariable1 = 5
         self.checkBox10.select()
@@ -320,23 +322,39 @@ class MyApp:
         fileType = splitName[1]  
         ClearSpectrum2.spectrum_name = baseNameThatCameIn + '.sp'
         ClearSpectrum2.file_name = baseNameThatCameIn
-        atoms = ["Atoms:", "C", "S", "H"]
+        atoms = []; atoms.append("Atoms:")
+        if(self.checkBoxH.get() == 1): atoms.append("H")
+        if(self.checkBoxC.get() == 1): atoms.append("C")
+        if(self.checkBoxN.get() == 1): atoms.append("N")
+        if(self.checkBoxO.get() == 1): atoms.append("O")
+        if(self.checkBoxSi.get() == 1): atoms.append("Si")
+        if(self.checkBoxS.get() == 1): atoms.append("S")
+        print (atoms)
+        
         listOfMolecluesToTry = createListOfPossibleMolecules(atoms)
+
 
         path = "MoleculeCatFiles"
         for molecule in listOfMolecluesToTry:
-            print("molecule " + str(molecule))
+            print("\nmolecule " + str(molecule))
+            self.text1.insert(END,molecule[0])
             localCatFileName = molecule[2] + ".cat"
             print(localCatFileName)
             ClearSpectrum2.known_freq_name = 'MoleculeCatFiles/' + localCatFileName
             ClearSpectrum2.clearVariables()
             ClearSpectrum2.readKnownFile()
-            ClearSpectrum2.peakAssignment(True) # True means doNotPlot
-            ClearSpectrum2.createListsOfPeaks()
+            numberOfMatchedPeaks = ClearSpectrum2.peakAssignment(True) # True means doNotPlot
+            print("Number of Matched Peaks = ", numberOfMatchedPeaks)
+            if(numberOfMatchedPeaks >0):
+                listOfMoleculesPresent.append(molecule[0])
+                self.text2.insert(END, molecule[0])
+                ClearSpectrum2.createListsOfPeaks()
 ##                ClearSpectrum2.clearSpectrum()
 ##                ClearSpectrum2.exportTheClearedFiles()
 ##                ClearSpectrum2.renamedPlot()
+        print("\n\nList Of Molecules Present: ", listOfMoleculesPresent)
 
+        
         
         
     def addAdditionalElement(self, event):
@@ -346,22 +364,27 @@ class MyApp:
         print (' testing for check box variables ')
         
         print(str(self.checkBox1Variable.get()) )
-        if( self.checkBox3Variable.get() == 0):        print (' checkbox 3 =0')
-        if(self.checkBox3Variable.get() == 1):         print (' checkbox 3 =1')       
-        if(self.checkBoxOCS.get() == 0):               print (' checkbox 4 =0')
-        if(self.checkBoxOCS.get() == 1):               print (' checkbox 4 =1')
-        if(self.checkBoxH2O2.get() == 0):              print (' checkbox 5 =0')
-        if(self.checkBoxH2O2.get() == 1):              print (' checkbox 5 =1')
-        if(self.checkBoxSO2.get() == 0):               print (' checkbox 6 =0')
-        if(self.checkBoxSO2.get() == 1):               print (' checkbox 6 =1')
+        if(self.checkBoxH.get() == 0):      print (' checkbox H =0')
+        if(self.checkBoxH.get() == 1):      print (' checkbox H =1')       
+        if(self.checkBoxC.get() == 0):      print (' checkbox C =0')
+        if(self.checkBoxC.get() == 1):      print (' checkbox C =1')
+        if(self.checkBoxN.get() == 0):      print (' checkbox N =0')
+        if(self.checkBoxN.get() == 1):      print (' checkbox N =1')
+        if(self.checkBoxO.get() == 0):      print (' checkbox O =0')
+        if(self.checkBoxO.get() == 1):      print (' checkbox O =1')
+        if(self.checkBoxSi.get() == 0):     print (' checkbox O =0')
+        if(self.checkBoxSi.get() == 1):     print (' checkbox O =1')
+        if(self.checkBoxS.get() == 0):      print (' checkbox O =0')
+        if(self.checkBoxS.get() == 1):      print (' checkbox O =1')
 
-        for i in range(0,3):
-            print('index = ' + str(i))
-            if   ((i==0) and (self.checkBoxH2O2.get() == 1)):   ClearSpectrum2.known_freq_name = 'Contaminants/h2o_dimer.list'
-            elif ((i==1) and (self.checkBoxSO2.get() == 1)):     ClearSpectrum2.known_freq_name = 'Contaminants/so2.cat'
-            elif ((i==2) and (self.checkBoxOCS.get() == 1)):     ClearSpectrum2.known_freq_name = 'Contaminants/ocs.cat'
-            else: ClearSpectrum2.known_freq_name = 'none'
-            print(' iteration  - file name =  ', ClearSpectrum2.known_freq_name)
+        atoms = []; atoms.append("Atoms:")
+        if(self.checkBoxH.get() == 1): atoms.append("H")
+        if(self.checkBoxC.get() == 1): atoms.append("C")
+        if(self.checkBoxN.get() == 1): atoms.append("N")
+        if(self.checkBoxO.get() == 1): atoms.append("O")
+        if(self.checkBoxSi.get() == 1): atoms.append("Si")
+        if(self.checkBoxS.get() == 1): atoms.append("S")
+        print(atoms)
 
 
         
@@ -405,12 +428,12 @@ def initializeListOfAllMolecules():
         endIsAt = len(lines)
         # scan through to build up a molecule, then add it to the structure when done
         for index in range (0,endIsAt):
-            print("Index=:", index)
-            print("lines[index] " + lines[index])
+            if (printing ==True) : print("Index=:", index)
+            if (printing ==True) : print("lines[index] " + lines[index])
             if('Name:') in lines[index]:
                 localMolecule[0] = lines[index]
             if('Atoms:') in lines[index]:
-                print(localMolecule)
+                if (printing ==True) : print(localMolecule)
                 #remove commas    ??  below . . .            
                 localMolecule[1] = lines[index].split()
 
@@ -422,10 +445,13 @@ def initializeListOfAllMolecules():
         listOfAllMolecules.append([1,2,3])
         listOfAllMolecules[moleculeIndex] = deepcopy(localMolecule)
         moleculeIndex +=1
-        print("internal ", listOfAllMolecules)
-    print(listOfAllMolecules)
-    atoms = ["Atoms:", "C", "S", "H"]
+        if (printing ==True) : print("internal ", listOfAllMolecules)
+    if (printing ==True) : print(listOfAllMolecules)
+    atoms = ["Atoms:", "C", "S", "H", "O", "Si", "N"]
+
+    
     response = createListOfPossibleMolecules(atoms)
+    print("Number of possible molecules", len(response)) 
     print("List of possible molecules: " + str(response))
                 
 
@@ -436,20 +462,23 @@ def createListOfPossibleMolecules(atoms):
         possible = True
         print("Molecule: "+ str(molecule[0]))
         for atom in molecule[1]:
-            print("original ",atom)
+            if (printing ==True) : print("original ",atom)
             # remove commas
             filtered = atom.replace (',','')
-            print("commas removed ",filtered)
+            if (printing ==True) : print("commas removed ",filtered)
             if filtered in atoms:
-                print ("present " + str(filtered))
+                if (printing ==True) : print ("present " + str(filtered))
             else:
-                print ("not present " + str(filtered))
+                if (printing ==True) : print ("not present " + str(filtered
+                                            ))
                 possible = False
         if(possible):
             print("possible\n")
             listOfPossibleMolecules.append(molecule)
         else:
             print("Not possible\n")
+    print("Number of possible molecules", len(listOfPossibleMolecules)) 
+    print("List of possible molecules: " + str(listOfPossibleMolecules)) 
     return(listOfPossibleMolecules)
     
            
