@@ -11,10 +11,18 @@ import CallScriptTest
 import PeakFinder_BlackChirp2
 import time
 import os
+import numpy as np
+from math import ceil
+
+#import sys # basic files tools
+import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1.axes_rgb import make_rgb_axes, RGBAxes
 
 inputFilename = 'defaultInputFileName'
 printing = False
 listOfAllMolecules = []
+additionalElementsAdded = []
+reportFile = []
 
 class MyApp:
     def __init__(self, myParent):
@@ -61,7 +69,7 @@ class MyApp:
         
         
         Label(self.myContainer1, text="Frequency Range", height =3).grid(row = 1, column = 0)
-        self.comboBox1 = Spinbox(self.myContainer1, values = ("8 - 18 GHz", "6.5 - 19.6 GHz", "4 - 8 GHz", "18 - 26 GHz"), bg = 'white', width = 15)
+        self.comboBox1 = Spinbox(self.myContainer1, values = ("6.5 - 19.6 GHz", "8 - 18 GHz", "4 - 8 GHz", "18 - 26 GHz"), bg = 'white', width = 15)
         self.comboBox1.grid(row = 1, column = 1)
         
         self.button1 = Button(self.myContainer1, command = self.createFT)   # can either put the command in here, or use the "bind" below
@@ -185,7 +193,11 @@ class MyApp:
         shortName = stuffs[len(stuffs)-1]
         print(shortName)
         self.e1.insert(0,shortName)
-    
+        self.checkBox1.deselect()       #Checkbox 1 is FFT Done
+        self.checkBox2.deselect()       #Checkbox 2 is ARtifacts Removed
+        self.checkBox3.deselect()       #Checkbox 3 is Contanimants
+        self.checkBox10.deselect()       #Checkbox 10 is Molecules
+        ClearSpectrum2.clearVariables()
 
     def createFT_withEvent(self, event):
         print ('mouse = ', str(event.x), str(event.y))
@@ -257,9 +269,10 @@ class MyApp:
             fileType = splitName[1]
             if(fileType != 'sp'):
                 print("Sorry - that is not a spectrum file type")
+        ClearSpectrum2.clearVariables()
         ClearSpectrum2.spectrum_name = baseNameThatCameIn + '.sp'
         ClearSpectrum2.file_name = baseNameThatCameIn
-        ClearSpectrum2.known_freq_name = 'FromMarie/artifacts.cat'
+        ClearSpectrum2.known_freq_name = 'ArtifactFiles/artifacts_18950MHz.cat'
         # ClearSpectrum2.known_name = 'artifacts' - now calculated in ClearSpectrum2.py praa Feb 10 2016
         ClearSpectrum2.readSpectrumAndLineFiles()
         ClearSpectrum2.readKnownFile()
@@ -267,6 +280,14 @@ class MyApp:
         ClearSpectrum2.createListsOfPeaks()
         ClearSpectrum2.clearSpectrum()
         ClearSpectrum2.exportTheClearedFiles()
+        print("Original bucket" + str(ClearSpectrum2.bucket))
+        
+        # now re-load in the cleared spectrum and line file  PRAA April 11 2016
+        ClearSpectrum2.spectrum_name = baseNameThatCameIn + '_clear_artifacts_18950MHz.sp'
+        ClearSpectrum2.file_name = baseNameThatCameIn + '_clear_artifacts_18950MHz'
+        ClearSpectrum2.readSpectrumAndLineFiles()
+        print("Un - Original bucket" + str(ClearSpectrum2.bucket))
+        
         ClearSpectrum2.renamedPlot()
 
     def removeContaminants(self, event):
@@ -289,6 +310,7 @@ class MyApp:
     
         ClearSpectrum2.spectrum_name = baseNameThatCameIn + '.sp'
         ClearSpectrum2.file_name = baseNameThatCameIn
+        ClearSpectrum2.clearVariables()
         for i in range(0,3):
             # print('index = ' + str(i))
             if  ((i==0) and (self.checkBoxOCS.get() == 1)):     ClearSpectrum2.known_freq_name = 'Contaminants/ocs.cat'
@@ -309,6 +331,7 @@ class MyApp:
 
         self.commonVariable1 = 4
         self.checkBox3.select()
+        print("Uncontaminated bucket" + str(ClearSpectrum2.bucket))
 
     def removeMolecularLines(self, event):
         global inputFilename
@@ -329,16 +352,24 @@ class MyApp:
         if(self.checkBoxO.get() == 1): atoms.append("O")
         if(self.checkBoxSi.get() == 1): atoms.append("Si")
         if(self.checkBoxS.get() == 1): atoms.append("S")
+        atoms.extend(additionalElementsAdded)
         print (atoms)
         
         listOfMolecluesToTry = createListOfPossibleMolecules(atoms)
-
-
+        toMakeTheFTBFileFreq = []
+        toMakeTheFTBFileIntensity = []
+        #del toMakeTheFTBFileFreq[:]
+        #del toMakeTheFTBFileIntensity[:]
+        del reportFile[:]
         path = "MoleculeCatFiles"
         for molecule in listOfMolecluesToTry:
             print("\nmolecule " + str(molecule))
             self.text1.insert(END,molecule[0])
-            localCatFileName = molecule[2] + ".cat"
+            print(molecule[2])
+            if '.lines' in molecule[2]:
+                localCatFileName = molecule[2]
+            else:
+                localCatFileName = molecule[2] + ".cat"
             print(localCatFileName)
             ClearSpectrum2.known_freq_name = 'MoleculeCatFiles/' + localCatFileName
             ClearSpectrum2.clearVariables()
@@ -349,16 +380,96 @@ class MyApp:
                 listOfMoleculesPresent.append(molecule[0])
                 self.text2.insert(END, molecule[0])
                 ClearSpectrum2.createListsOfPeaks()
+                print(str(ClearSpectrum2.match_freq))
+                print("\n Molecule: "+str(molecule)+" \npeaks: ")
+                reportFile.append("\n Molecule: "+str(molecule)+" \npeaks: "+str(ClearSpectrum2.match_freq))
 ##                ClearSpectrum2.clearSpectrum()
 ##                ClearSpectrum2.exportTheClearedFiles()
 ##                ClearSpectrum2.renamedPlot()
-        print("\n\nList Of Molecules Present: ", listOfMoleculesPresent)
 
+        print("\n\nList Of Molecules Present: ", listOfMoleculesPresent)
+        print("\nNumber of molecules present = ", str(len(listOfMoleculesPresent)))
+        print("Lines in spectrum: "+ str(ClearSpectrum2.freq_list_end))
+        for index in range(len(reportFile)):
+            print(reportFile[index])
+        print("Final List of removed molecular lines (the Bucket)")
+        for index in range (len(ClearSpectrum2.bucket)):
+            print(ClearSpectrum2.bucket[index])
         
+        print("\nUnassigned Lines:")
+        print("Frequency, Intensity")
+        for index in range (len(ClearSpectrum2.peak_freq_ini)):
+            if index in ClearSpectrum2.bucketedLines:
+                print("Cleared: " + str(ClearSpectrum2.peak_freq_ini[index]), str(ClearSpectrum2.peak_int_ini[index]))
+            else:
+                print(str(ClearSpectrum2.peak_freq_ini[index]),"\t" , str(ClearSpectrum2.peak_int_ini[index]))
+                toMakeTheFTBFileFreq.append(ClearSpectrum2.peak_freq_ini[index])
+                toMakeTheFTBFileIntensity.append(ClearSpectrum2.peak_int_ini[index])
+        # Create FTB file
+        FTBFilePeakArray = np.array( [toMakeTheFTBFileFreq, toMakeTheFTBFileIntensity] ).transpose()
+        FTBFilePeakArray = FTBFilePeakArray[FTBFilePeakArray[:, 1].argsort()[::-1]]
+        with open(baseNameThatCameIn + '.ftb', 'w') as out_file:    
+            for i in range(len(FTBFilePeakArray)):
+                # define the number of shots as a function of the intensity
+                n_shots = ceil(2 / (5 * FTBFilePeakArray[i,1])) 
+                if (n_shots < 10):
+                    n_shots = 10
+                out_file.write('ftm:%5.3f shots:%1s dipole:1.0 drpower:-20 drfreq:1000.000\n' %(FTBFilePeakArray[i,0], n_shots))
+        out_file.close()
+        # Create Report file
+
+        filename = baseNameThatCameIn + 'report.txt'
+        outf = open(filename, 'w')
+        outf.write("Report File for " + baseNameThatCameIn + '\n\n Lines assigned to molecules:\n')
+        for index in range (len(ClearSpectrum2.bucket)):
+            lineToWrite = str(ClearSpectrum2.bucket[index]) + '\n'
+            outf.write(lineToWrite)
+        outf.write('\nList of un-assigned lines in Intensity order\n\n')
+        outf.write('\nFrequency: \tIntensity:\n')
+        for index in range (len(FTBFilePeakArray)):
+              lineToWrite = str(FTBFilePeakArray[index,0]) +'   \t' + str(FTBFilePeakArray[index,1]) + '\n'
+              outf.write(lineToWrite)
+        outf.write('\nList of un-assigned lines in Frequency order\n\n')
+        outf.write('\nFrequency: \tIntensity\n')
+        FTBFilePeakArray = FTBFilePeakArray[FTBFilePeakArray[:, 0].argsort()]
+        for index in range (len(FTBFilePeakArray)):
+              lineToWrite = str(FTBFilePeakArray[index,0]) + '   \t'+ str(FTBFilePeakArray[index,1]) + '\n'
+              outf.write(lineToWrite)
+                
+        outf.close()
+
+                
+        # Now create graph
+        xCoord = []
+        yCoord = []
+        for index in range(len(ClearSpectrum2.bucket)):
+            xCoord.append (ClearSpectrum2.bucket[index][0])
+            yCoord.append (ClearSpectrum2.bucket[index][1])
+            # print ("X coord " + str(xCoord[index]))
+            # print ("Y coord " + str(yCoord[index]))
+
+        plt.figure(3) # creation of a figure
+        #
+        # Known frequencies
+        plt.subplot(211) #
+        plt.title ('Peaks removed ')
+        plt.ion() #interactive mode
+        #xlim([freq_list_ini[0], freq_list_ini[-1]])
+        plt.vlines(xCoord, 0, yCoord, colors='red')
+        # Initial spectrum in the background, Cleared spectrum in the front
+        plt.subplot(212, sharex=plt.subplot(211)) 
+        plt.title ('Initial spectrum (blue), Matched lines (red)')
+        #, color='red')
+        plt.plot(ClearSpectrum2.freq_list_ini,ClearSpectrum2.int_list_ini)
+        newY = max(ClearSpectrum2.int_list_ini) * 1.1
+        plt.vlines(xCoord, 0, newY, colors='red')
+        #vlines(match_peak_array, 1e-6, match_int, colors='gray', linestyle = '--')
+        plt.show(block=True)
         
         
     def addAdditionalElement(self, event):
         print ('adding additional element - ', self.comboBox3.get())
+        additionalElementsAdded.append(self.comboBox3.get())
         #print(self.checkBox1Variable )
         #self.checkBox1Variable += 1
         print (' testing for check box variables ')
@@ -378,6 +489,7 @@ class MyApp:
         if(self.checkBoxS.get() == 1):      print (' checkbox O =1')
 
         atoms = []; atoms.append("Atoms:")
+
         if(self.checkBoxH.get() == 1): atoms.append("H")
         if(self.checkBoxC.get() == 1): atoms.append("C")
         if(self.checkBoxN.get() == 1): atoms.append("N")
@@ -426,6 +538,7 @@ def initializeListOfAllMolecules():
         f = open(filename, 'r')
         lines = f.readlines()
         endIsAt = len(lines)
+        fileType = ''
         # scan through to build up a molecule, then add it to the structure when done
         for index in range (0,endIsAt):
             if (printing ==True) : print("Index=:", index)
@@ -436,23 +549,27 @@ def initializeListOfAllMolecules():
                 if (printing ==True) : print(localMolecule)
                 #remove commas    ??  below . . .            
                 localMolecule[1] = lines[index].split()
+            if("FileType:") in lines[index]:
+                fileType = lines[index].split()[1] 
 
         # but listOfAllMolecules is not long enough yet - so append something, then do a deep copy
         baseName = filename.split('.')[0]
         if ('/' in baseName):
             baseName = baseName.split('/')[1]
-        localMolecule[2] = baseName
+        localMolecule[2] = baseName + fileType
+        #localMolecule[2] =  localMolecule[0].split()[1]      
         listOfAllMolecules.append([1,2,3])
         listOfAllMolecules[moleculeIndex] = deepcopy(localMolecule)
         moleculeIndex +=1
         if (printing ==True) : print("internal ", listOfAllMolecules)
     if (printing ==True) : print(listOfAllMolecules)
-    atoms = ["Atoms:", "C", "S", "H", "O", "Si", "N"]
-
     
-    response = createListOfPossibleMolecules(atoms)
-    print("Number of possible molecules", len(response)) 
-    print("List of possible molecules: " + str(response))
+
+    # The following lines are test code. Should be removed "eventually"
+    # atoms = ["Atoms:", "C", "S", "H", "O", "Si", "N"]
+    # response = createListOfPossibleMolecules(atoms)
+    # print("Number of possible molecules", len(response)) 
+    # print("List of possible molecules: " + str(response))
                 
 
 def createListOfPossibleMolecules(atoms):

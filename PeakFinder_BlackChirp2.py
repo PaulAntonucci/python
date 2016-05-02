@@ -153,6 +153,9 @@ def readInputFiles():
     global int_list_fid
     global len_fid_ini
 
+    del int_list_fid[:]
+    del time_list[:]
+
     time_fid = -step
     for i in range(fid_ini,fid_end):
         int_fid = spectrum_lines[i]
@@ -234,6 +237,7 @@ def FIDtoFFT():
     del(int_list_fid_trunc)
 
     # freq_list = [] - moved to global variable area Dec 2 2015 praa
+    del freq_list[:]
     # Determine the frequencies in MHz
     for i in range(len(int_list_fft)):
         if sideband == "Upper":
@@ -298,8 +302,14 @@ def peakDetection():
     # peak_int_fig = []
     # peak_freq_list = []
     # noise_level = []
+
     global lower_limit; global peak_int_list; global peak_int_fig; global peak_freq_list; global noise_level
     global magnitude; global magn_smooth_list1
+
+    del peak_int_list[:]
+    del peak_int_fig[:]
+    del peak_freq_list[:]
+    del noise_level[:]
 
     print("length of magnitude=" + str(len(magnitude)) + " length of magn_smooth_list1=" + str(len(magn_smooth_list1)))
     for i in range(1,len(magn_smooth_list1)-1):

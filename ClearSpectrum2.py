@@ -30,6 +30,7 @@ peak_int_ini = []
 peak_unc_ini = []
 peak_array = np.array( [peak_freq_ini, peak_int_ini, peak_unc_ini] )
 
+
 # in readKnownFile
 known_freq_array = []
 
@@ -51,13 +52,16 @@ freq_list_assign = []
 int_list_end = []
 freq_list_end = []
 int_list_assign = []
+bucket = []
+bucketedLines = []
 
 
-def clearVariables():
+def clearVariables():       # This clears the variables necessary for re-doing "remove molecular lines"
+                            # IT does NOT remove the variables necessary for opening a new file, or creating a new FFT
     global known_freq_array; global match_freq;     global match_int;
     global match_peak_array; global peak_freq_end;  global peak_int_end; global peak_unc_end;
     global peak_freq_assign; global peak_int_assign; global peak_unc_assign;
-    global freq_list_assign; global int_list_end;   global freq_list_end; global int_list_assign;
+    global freq_list_assign; global int_list_end;   global freq_list_end; global int_list_assign
 
     # del known_freq_array[:] - set to an np.array
     # in peak_assignment
@@ -77,6 +81,7 @@ def clearVariables():
     del int_list_end[:]
     del freq_list_end[:]
     del int_list_assign[:]
+
 
 
 #########################################################
@@ -131,12 +136,16 @@ def getFileName():
 def readSpectrumAndLineFiles():
     global freq_list_ini;   global int_list_ini
     global peak_freq_ini;   global peak_int_ini;    global peak_unc_ini;
-    global peak_array;
-    global known_freq_array
-    global step
+    global peak_array;      global step
+    global bucket;          global bucketedLines;
     
     with open(spectrum_name, 'r') as spectrum_file:
         spectrum_lines = spectrum_file.read().splitlines()
+
+    del freq_list_ini[:]
+    del int_list_ini[:]
+    del bucket[:]
+    del bucketedLines[:]
 
     for i in range(len(spectrum_lines)):
         if (len(spectrum_lines[i])>1):
@@ -160,7 +169,10 @@ def readSpectrumAndLineFiles():
     with open(file_name + '.lines', 'r') as peak_file:
         peak_lines = peak_file.read().splitlines()
 
-
+    del peak_freq_ini[:]
+    del peak_int_ini[:]
+    del peak_unc_ini[:]
+    
     for i in range(len(peak_lines)):
         peak_freq = peak_lines[i].split()[0]
         peak_int = peak_lines[i].split()[1]
@@ -196,16 +208,21 @@ def readKnownFile():
     factor = 1
     if ('artifacts' in known_name):
         factor = 2  
-
+    #print("Number of Lines = " + str(len(known_freq_lines)))
+    
     for i in range(len(known_freq_lines)):
         #if(known_name == "h2c6"):
         #    print ("i:", i)
         #    print (known_freq_lines[i])
+        # print("i = " + str(i))
+        # print("string = "+ known_freq_lines[i])
         known_freq  = known_freq_lines[i].split()[0]
             
         if (ext == 'list'): # case of just a frequency list
             known_int  = -1
-        else:
+        elif (ext == "lines"):   #PRAA Mar 29 2016
+            known_int  = -1    
+        else :
             known_int  = known_freq_lines[i].split()[2]
             
         if (freq_list_ini[0] < float(known_freq) < freq_list_ini[-1]):        
@@ -243,13 +260,19 @@ def peakAssignment(doNotPlot):
 
     # Initialize a counter for matches
     counter = 0
+    del match_freq[:]
+    del match_int[:]
+    del match_unc[:]
 
     for i in range(len(known_freq_array)):          # PRAA note that peak_array[0] is a column of frequencies
         min_freq = np.abs(known_freq_array[i,0] - peak_array[0])    # PRAA note that min_freq is an array
         index = np.argmin(min_freq)
+        #print("I, index, freq ", str(i), str(index), known_freq_array[i,0])
         
         if (min_freq[index] < 0.2):
             #append the match list, and remove items from the remaining peaks array
+            print("index= "+ str(index))
+            print("peak_array[0, index] = " + str(peak_array[0, index]))
             match_freq.append(peak_array[0,index])
             match_int.append(peak_array[1,index])
             match_unc.append(peak_array[2,index])
@@ -264,7 +287,7 @@ def peakAssignment(doNotPlot):
             # PLOT
             #---------------------------------------------------
             
-            figure(1) # creation of a figure
+            figure(2) # creation of a figure
             #
             # Known frequencies
             subplot(211) #
@@ -291,7 +314,7 @@ def peakAssignment(doNotPlot):
         # PLOT
         #---------------------------------------------------
         
-        figure(1) # creation of a figure
+        figure(2) # creation of a figure
         #
         # Known frequencies
         subplot(211) #
@@ -334,9 +357,13 @@ def createListsOfPeaks():
     global  peak_freq_assign
     global  peak_int_assign
     global  peak_unc_assign
+    global  bucket
+    global  bucketedLines
+
     #peaks_assigned = []
 
     # remove the assigned peak + those that are too close (in the cleaning window)
+    # print(str(peak_freq_ini))
     for i in range(len(peak_freq_ini)):
         counter = 0
         for j in range(len(match_freq)):
@@ -345,6 +372,18 @@ def createListsOfPeaks():
                 peak_freq_assign.append(peak_freq_ini[i])
                 peak_int_assign.append(peak_int_ini[i])
                 peak_unc_assign.append(peak_unc_ini[i])
+                # Also drop these into the bucket of lines that are assigned, with the
+                # name of the assignment . . ..  something like
+                bucket.append([peak_freq_ini[i], peak_int_ini[i], known_name]) 
+                # where file_name gives the name of the molecule or "artifact"
+
+                #but now we need to keep track of what was taken out so we will have a list of unassigned lines -
+                # could do somthing like 
+                #if(peak_freq_ini[i]) in leftoversOfBucket:  removeIt
+                # humk - this seems awkward -
+                # how about we just record the indices??  That's much better !!!
+                bucketedLines.append(i)
+
         if (counter == 0):        
             peak_freq_end.append(peak_freq_ini[i])
             peak_int_end.append(peak_int_ini[i])
@@ -362,6 +401,7 @@ def createListsOfPeaks():
     #check = len(peak_lines) - len(peaks_assigned) - len(peak_lines_end)
 
     print(str(len(match_freq)) + ' matching frequencies in ' + known_freq_name)
+    print(str(match_freq))   #praa MArch 30 2016
 
     print(str(len(peak_freq_ini) - len(peak_freq_end)) + ' peak removed')
     if (len(match_freq) >  (len(peak_freq_ini) - len(peak_freq_end))):
@@ -410,6 +450,9 @@ def clearSpectrum():
         if ( diff[index] < (5.2 - 4.97 * 0.41**(match_int[index])) *factor ):
             freq_list_assign.append(freq_list_ini[i])
             int_list_assign.append(int_list_ini[i])
+            # Also drop these into the bucket of lines that are assigned, with the
+            # name of the assignment . . ..  e.g. - oh, not here in the spectrum, in the line list - previous routime
+            #  bucket.append(freq_list_ini[i], int_list_ini[i], file_name)
         else:
             int_list_end.append(int_list_ini[i])
             freq_list_end.append(freq_list_ini[i])
@@ -435,15 +478,16 @@ def exportTheClearedFiles():
     with open(file_name_long + '_' + known_name + '.sp', 'w') as sp_file:
         for i in range(len(freq_list_end)-1):
             sp_file.write('%5.3f %5.5f\n' %(freq_list_end[i], int_list_end[i]))
-            if (freq_list_end[i+1] - freq_list_end[i] > 2*step):
-                sp_file.write('\n')
+            # test without these lines - April 6 2016 PRAA
+            #if (freq_list_end[i+1] - freq_list_end[i] > 2*step):
+            #    sp_file.write('\n')
         sp_file.write('%5.3f %5.5f\n' %(freq_list_end[-1], int_list_end[-1]))            
 
     with open(file_name_short + '_assigned_' + known_name + '.sp', 'w') as sp_assign_file:
         for i in range(len(freq_list_assign)-1):
             sp_assign_file.write('%5.3f %5.5f\n' %(freq_list_assign[i], int_list_assign[i]))
-            if (freq_list_assign[i+1] - freq_list_assign[i] > 2 * step):
-                sp_assign_file.write('\n')
+            #if (freq_list_assign[i+1] - freq_list_assign[i] > 2 * step):
+            #    sp_assign_file.write('\n')
         sp_assign_file.write('%5.3f %5.5f\n' %(freq_list_assign[-1], int_list_assign[-1]))
             
             
@@ -454,6 +498,10 @@ def exportTheClearedFiles():
     with open(file_name_short + '_assigned_' + known_name + '.lines', 'w') as lines_assign_file:
         for i in range(len(peak_freq_assign)):
             lines_assign_file.write('%9.3f  %5.3f  %5.3f\n' %(peak_freq_assign[i], peak_int_assign[i], peak_unc_assign[i]))
+
+
+# def copyClearedLineListToNextInput():
+    #And also spectrum??
 
 
 
@@ -491,7 +539,7 @@ def renamedPlot():
             
             
             
-    figure(1) # creation of a figure
+    figure(2) # creation of a figure
     #
     # Known frequencies
     subplot(211) #
